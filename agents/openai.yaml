@@ -1,0 +1,4 @@
+interface:
+  display_name: "Programmer Resume Optimizer"
+  short_description: "Draft and optimize developer resumes with measurable impact."
+  default_prompt: "Use $programmer-resume-optimizer to rewrite my developer resume for a backend role with STAR bullets and quantified outcomes."
