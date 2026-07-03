@@ -15,9 +15,10 @@ Copied verbatim from the approved spec. Every task's requirements implicitly inc
 - **Platform-neutral phrasing:** SKILL.md prose describes actions ("read a file", "run a git/gh command", "search file contents"), never hard-coded Claude-only or Codex-only tool names.
 - **Sub-skill self-containment:** Sub-skill SKILL.md files must NOT reference `../` (no cross-directory reference into the main skill). Each carries only the rule fragments it needs.
 - **File-name ASCII rule:** All paths are ASCII (no CJK in filenames). The 6 existing `简历指南*.md` files are renamed to `guide-N-<slug>.md`; their *contents* stay Chinese.
-- **LaTeX placeholder convention:** Template placeholders use `<<UPPER_CASE_VAR>>` (e.g. `<<NAME>>`). LaTeX-safe; trivial to find/replace.
-- **Canonical placeholder set** (shared contract between `resume.schema.json`, the `<<VAR>>` templates, and `TEMPLATE_GUIDE.md`):
-  `<<NAME>>`, `<<ROLE_OR_TITLE>>`, `<<CONTACT>>`, `<<SUMMARY>>`, `<<SKILLS>>`, `<<EXPERIENCE>>`, `<<PROJECTS>>`, `<<EDUCATION>>`, `<<AWARDS>>`.
+- **LaTeX template convention:** The user-supplied LaTeX templates (`templates/latex/resume-cn.tex`, `resume-na.tex`) are real, complete templates with custom macros. Field-level identity/education values use `<<UPPER_CASE_VAR>>` placeholders (LaTeX-safe, trivial to find/replace). The project/experience/skills body is **example content** the Export mode regenerates in the templates' own macro syntax for the user to paste in (per the templates' own instructions).
+- **Canonical token set** (the user-supplied templates' identity/education placeholders — shared contract between `resume.schema.json`, the `.tex` templates, and `TEMPLATE_GUIDE.md`):
+  `<<NAME>>`, `<<EMAIL>>`, `<<PHONE>>`, `<<GITHUB_USERNAME>>`, `<<SCHOOL_MASTER>>`, `<<GPA_MASTER>>`, `<<DATE_MASTER>>`, `<<SCHOOL_BACHELOR>>`, `<<GPA_BACHELOR>>`, `<<DATE_BACHELOR>>`, `<<LANGUAGE_SCORE>>`.
+- **Body generation (not tokens):** Projects / experience / skills are NOT single placeholders. Export renders them as ready-to-paste lines using the templates' macros (`\resumeProjectHeading{...}{...}{...}` + `\resumeItem{...}` + skill `\item`s) to replace the fictional example block.
 - **Authenticity red line (all capabilities):** Never fabricate degree / years of experience / employer identity / unverifiable metrics. Packaging wording is allowed; every highlight must be defensible in interview. `resume-from-code` highlights must have code evidence. Unverifiable quantification becomes a placeholder the user confirms — never invented.
 - **Output default language:** Compact, copy-ready Chinese unless the user requests another language or selects NA localization.
 - **Validator command:** `python3 scripts/validate.py` must exit 0 (prints `OK: …`). Tests: `python3 -m pytest tests/ -q`.
@@ -40,9 +41,9 @@ Copied verbatim from the approved spec. Every task's requirements implicitly inc
 | `.codex-plugin/plugin.json` | Codex plugin manifest (metadata; same `skills/`). | T2 |
 | `agents/openai.yaml` | Codex `interface` declaration, updated to describe the suite. | T4 |
 | `templates/json/resume.schema.json` | The canonical schema (moved here from the row above — single home). | T5 |
-| `templates/latex/resume-cn.tex.placeholder` | Empty CN LaTeX template with `<<VAR>>` slots. | T11 |
-| `templates/latex/resume-na.tex.placeholder` | Empty NA LaTeX template with `<<VAR>>` slots. | T11 |
-| `templates/latex/TEMPLATE_GUIDE.md` | Documents the `<<VAR>>` set + how to supply your own template. | T11 |
+| `templates/latex/resume-cn.tex` | Real CN LaTeX template (user-supplied, verbatim; moved from `docs/latex_template/`). | T11 |
+| `templates/latex/resume-na.tex` | Real NA/EN LaTeX template (user-supplied, verbatim; moved from `docs/latex_template/`). | T11 |
+| `templates/latex/TEMPLATE_GUIDE.md` | Documents the 11 tokens + the macro-paste body workflow + custom-template support. | T11 |
 | `templates/html/resume.html` | Single-page printable HTML skeleton. | T11 |
 | `templates/markdown/resume.md` | Markdown resume skeleton. | T11 |
 | `scripts/validate.py` | Structural validator (frontmatter, refs, manifests, self-containment, template vars). | T3 |
@@ -272,7 +273,7 @@ def test_bad_manifest_json_fails(tmp_path):
 def test_undocumented_template_var_fails(tmp_path):
     files = _base_tree()
     files["templates/latex/TEMPLATE_GUIDE.md"] = "Tokens: <<NAME>>"
-    files["templates/latex/resume-na.tex.placeholder"] = "<<NAME>> <<SECRET>>"
+    files["templates/latex/resume-na.tex"] = "<<NAME>> <<SECRET>>"
     _write_tree(tmp_path, files)
     errs = validate(tmp_path)
     assert any("<<SECRET>>" in e and "TEMPLATE_GUIDE" in e for e in errs)
@@ -389,7 +390,7 @@ def validate(root: Path = DEFAULT_ROOT):
     if guide.is_file():
         declared = set(PLACEHOLDER_RE.findall(guide.read_text(encoding="utf-8")))
         latex_dir = root / "templates/latex"
-        for tex_name in ("resume-cn.tex.placeholder", "resume-na.tex.placeholder"):
+        for tex_name in ("resume-cn.tex", "resume-na.tex"):
             tex = latex_dir / tex_name
             if not tex.is_file():
                 continue
@@ -543,13 +544,13 @@ git commit -m "docs: update Codex interface + add EN/ZH README skeletons"
 
 ### Task 5: Canonical structured schema (`templates/json/resume.schema.json`)
 
-The shared intermediate representation that Export mode and all templates consume. JSON Resume-compatible + tech extensions.
+The shared intermediate representation that Export mode consumes. The identity/education fields map 1:1 onto the user-supplied templates' 11 tokens; skills/work/projects are structured for macro rendering.
 
 **Files:**
 - Create: `templates/json/resume.schema.json`
 
 **Interfaces:**
-- Produces: a JSON Schema document whose top-level properties map 1:1 onto the canonical `<<VAR>>` set. Export mode (Task 6) renders each property into the matching placeholder.
+- Produces: a JSON Schema whose `basics` + `education` fields populate the 11 `<<TOKEN>>`s, and whose `skills`/`work`/`projects`/`awards` arrays Export renders into the templates' macro syntax (Task 9).
 
 - [ ] **Step 1: Write the schema**
 
@@ -563,25 +564,40 @@ The shared intermediate representation that Export mode and all templates consum
   "properties": {
     "basics": {
       "type": "object",
-      "description": "Maps to <<NAME>>, <<ROLE_OR_TITLE>>, <<CONTACT>>, <<SUMMARY>>.",
+      "description": "Populates <<NAME>>, <<EMAIL>>, <<PHONE>>, <<GITHUB_USERNAME>>, <<LANGUAGE_SCORE>>.",
       "properties": {
         "name": {"type": "string"},
-        "roleOrTitle": {"type": "string"},
-        "targetMarket": {"type": "string", "enum": ["CN", "NA"]},
-        "phone": {"type": "string"},
         "email": {"type": "string"},
+        "phone": {"type": "string"},
+        "githubUsername": {"type": "string"},
+        "languageScore": {"type": "string", "description": "e.g. CET-6 / TOEFL 105 / IELTS 7.5"},
+        "targetMarket": {"type": "string", "enum": ["CN", "NA"]},
         "location": {"type": "string"},
         "wechat": {"type": "string"},
         "linkedin": {"type": "string"},
-        "github": {"type": "string"},
         "website": {"type": "string"},
         "workAuthorization": {"type": "string"},
         "summary": {"type": "string"}
       }
     },
+    "education": {
+      "type": "array",
+      "description": "First two entries populate <<SCHOOL_MASTER>>/<<GPA_MASTER>>/<<DATE_MASTER>> and <<SCHOOL_BACHELOR>>/<<GPA_BACHELOR>>/<<DATE_BACHELOR>>.",
+      "items": {"type": "object", "properties": {
+        "level": {"type": "string", "enum": ["master", "bachelor", "phd", "other"]},
+        "institution": {"type": "string"},
+        "score": {"type": "string", "description": "GPA, e.g. 3.8/4.0"},
+        "date": {"type": "string", "description": "e.g. 2024.06"},
+        "area": {"type": "string"},
+        "studyType": {"type": "string"},
+        "rank": {"type": "string", "description": "CN only, e.g. 专业排名前10%"},
+        "courses": {"type": "array", "items": {"type": "string"}},
+        "cet": {"type": "string", "description": "CN only, e.g. CET-6"}
+      }}
+    },
     "skills": {
       "type": "array",
-      "description": "Maps to <<SKILLS>>. CN: tiered (了解/熟悉/熟练掌握). NA: categorized, no tiers.",
+      "description": "Rendered as template skill items. CN: tiered (了解/熟悉/熟练掌握). NA: categorized, no tiers.",
       "items": {"type": "object", "properties": {
         "category": {"type": "string"},
         "items": {"type": "array", "items": {"type": "string"}},
@@ -590,7 +606,7 @@ The shared intermediate representation that Export mode and all templates consum
     },
     "work": {
       "type": "array",
-      "description": "Maps to <<EXPERIENCE>>. NA: X-Y-Z action verbs. CN: STAR + 技术栈 line.",
+      "description": "Rendered via \\resumeProjectHeading + \\resumeItem. NA: X-Y-Z action verbs. CN: STAR + 技术栈 line.",
       "items": {"type": "object", "properties": {
         "company": {"type": "string"},
         "position": {"type": "string"},
@@ -602,33 +618,18 @@ The shared intermediate representation that Export mode and all templates consum
     },
     "projects": {
       "type": "array",
-      "description": "Maps to <<PROJECTS>>.",
+      "description": "Rendered via \\resumeProjectHeading + \\resumeItem.",
       "items": {"type": "object", "properties": {
         "name": {"type": "string"},
         "description": {"type": "string"},
         "techStack": {"type": "array", "items": {"type": "string"}},
         "url": {"type": "string"},
+        "date": {"type": "string"},
         "highlights": {"type": "array", "items": {"type": "string"}}
-      }}
-    },
-    "education": {
-      "type": "array",
-      "description": "Maps to <<EDUCATION>>.",
-      "items": {"type": "object", "properties": {
-        "institution": {"type": "string"},
-        "area": {"type": "string"},
-        "studyType": {"type": "string"},
-        "startDate": {"type": "string"},
-        "endDate": {"type": "string"},
-        "score": {"type": "string"},
-        "rank": {"type": "string", "description": "CN only, e.g. 专业排名前10%"},
-        "courses": {"type": "array", "items": {"type": "string"}},
-        "cet": {"type": "string", "description": "CN only, e.g. CET-6"}
       }}
     },
     "awards": {
       "type": "array",
-      "description": "Maps to <<AWARDS>>.",
       "items": {"type": "object", "properties": {
         "title": {"type": "string"}, "date": {"type": "string"}, "awarder": {"type": "string"}
       }}
@@ -639,7 +640,7 @@ The shared intermediate representation that Export mode and all templates consum
 
 - [ ] **Step 2: Verify it parses as JSON Schema**
 
-Run: `python3 -c "import json; s=json.load(open('templates/json/resume.schema.json')); assert s['properties']['basics']['description'].startswith('Maps to'); print('OK')"`
+Run: `python3 -c "import json; s=json.load(open('templates/json/resume.schema.json')); assert s['properties']['basics']['description'].startswith('Populates'); print('OK')"`
 Expected: `OK`
 
 - [ ] **Step 3: Verify validator still green**
@@ -651,7 +652,7 @@ Expected: `OK: 1 skill(s), …`
 
 ```bash
 git add templates/json/resume.schema.json
-git commit -m "feat: add canonical tech-resume JSON schema (JSON Resume-compatible)"
+git commit -m "feat: add canonical tech-resume JSON schema (token-aligned)"
 ```
 
 ---
@@ -715,7 +716,7 @@ Prioritize project evidence, technical clarity, measurable impact, and authentic
 
 ### Export (导出)
 - Render the structured representation into the requested format. See [export-formats.md](references/export-formats.md).
-- LaTeX-first: fill `templates/latex/resume-{cn,na}.tex.placeholder` (or a user-supplied `--template <path>`) by substituting the canonical `<<VAR>>` tokens. Hand off the `.tex` for the user to compile with `xelatex`/`latexmk` (this skill does not compile).
+- LaTeX-first: take `templates/latex/resume-{cn,na}.tex` (or a user-supplied `--template <path>`); substitute the 11 identity/education `<<TOKEN>>`s; then render projects/work/skills as ready-to-paste lines in the template's own macros (`\resumeProjectHeading{...}{...}{...}` + `\resumeItem{...}` + skill `\item`s) to replace the fictional example block. Hand off the `.tex` for the user to compile with `xelatex` (CN needs ctex) — this skill does not compile.
 - Alternatives: Markdown (`templates/markdown/resume.md`), HTML (`templates/html/resume.html`), JSON Resume (`templates/json/resume.schema.json`).
 
 ## Cross-mode rules (always apply)
@@ -836,31 +837,36 @@ git commit -m "feat(resume-optimizer): jd-matching.md — JD parsing + role-bias
 
 ---
 
-### Task 9: `export-formats.md` — rendering rules + variable conventions
+### Task 9: `export-formats.md` — rendering rules + token/macro conventions
 
 **Files:**
 - Create: `skills/resume-optimizer/references/export-formats.md`
 
 **Content outline:**
-- **Intermediate representation:** the resume is held as JSON per `templates/json/resume.schema.json`; Export renders each property into the matching `<<VAR>>` token.
-- **Variable map** (canonical set — same as Global Constraints): `<<NAME>>`, `<<ROLE_OR_TITLE>>`, `<<CONTACT>>`, `<<SUMMARY>>`, `<<SKILLS>>`, `<<EXPERIENCE>>`, `<<PROJECTS>>`, `<<EDUCATION>>`, `<<AWARDS>>`. For each, which schema property populates it and the rendering rule.
-- **LaTeX (primary):** substitute tokens into `templates/latex/resume-{cn,na}.tex.placeholder` OR a user-supplied `--template <path>`. CN uses `xelatex` (CJK-safe); emit a `.tex` the user compiles. Leave `<<CONFIRM: …>>` markers for unverified metrics. Escaping rules: `%`→`\%`, `&`→`\&`, `_`→`\_`, `#`→`\#`.
-- **Markdown:** fill `templates/markdown/resume.md` skeleton (headings per section).
+- **Intermediate representation:** the resume is held as JSON per `templates/json/resume.schema.json`.
+- **Token map (identity/education — auto-substituted into the `.tex`):** the 11 tokens and the schema field that populates each:
+  `<<NAME>>`←basics.name, `<<EMAIL>>`←basics.email, `<<PHONE>>`←basics.phone, `<<GITHUB_USERNAME>>`←basics.githubUsername, `<<LANGUAGE_SCORE>>`←basics.languageScore, `<<SCHOOL_MASTER>>`/`<<GPA_MASTER>>`/`<<DATE_MASTER>>`←education[level=master], `<<SCHOOL_BACHELOR>>`/`<<GPA_BACHELOR>>`/`<<DATE_BACHELOR>>`←education[level=bachelor].
+- **Body generation (rendered, not tokenized):** projects/work/skills are emitted as ready-to-paste LaTeX in the templates' own macros, to replace the fictional example block:
+  - Project/work entry → `\resumeProjectHeading{<name>}{<techstack joined by ` / `>}{<date>}` followed by one `\resumeItem{...}` per highlight bullet.
+  - Skill group → one `\item \small ...` line per the template's skill style.
+  - Each highlight bullet must already be in the correct market style (CN STAR / NA X-Y-Z) from the prior mode.
+- **LaTeX (primary) workflow:** (1) copy `templates/latex/resume-{cn,na}.tex` (or user `--template <path>`); (2) substitute the 11 tokens; (3) emit the generated body block for the user to paste over the fictional example section; (4) CN compiled with `xelatex` (ctex), NA with `xelatex`/`pdflatex`. This skill does NOT compile. Leave `<<CONFIRM: …>>` markers for unverified metrics. Escaping: `%`→`\%`, `&`→`\&`, `_`→`\_`, `#`→`\#`, and escape `%` inside numbers.
+- **Markdown:** fill `templates/markdown/resume.md` skeleton.
 - **HTML:** fill `templates/html/resume.html` (single-column, print-CSS, ATS-friendly).
 - **JSON Resume:** emit structured JSON conforming to the schema.
 - **File naming:** CN `姓名-目标岗位-学校-专业.pdf`; NA `FirstLast_Resume.pdf`.
-- **Honesty:** never invent field values to fill a template; omit empty sections rather than fabricate.
+- **Honesty:** never invent field values; omit empty sections rather than fabricate; unfilled tokens stay as `<<TOKEN>>` with a flag rather than guessed values.
 
-**Acceptance:** variable map matches the canonical set exactly; per-format rendering rules complete.
+**Acceptance:** token map lists all 11 tokens; macro-rendering rules show the exact `\resumeProjectHeading`/`\resumeItem` syntax; per-format rules complete.
 
 - [ ] **Step 1: Write the file** (per outline).
 
-- [ ] **Step 2: Content checklist + variable-set consistency**
+- [ ] **Step 2: Token-map completeness check**
 
 Run: `python3 - <<'PY'
 import re
 g=set(re.findall(r"<<([A-Z_]+)>>", open("skills/resume-optimizer/references/export-formats.md").read()))
-canonical={"NAME","ROLE_OR_TITLE","CONTACT","SUMMARY","SKILLS","EXPERIENCE","PROJECTS","EDUCATION","AWARDS"}
+canonical={"NAME","EMAIL","PHONE","GITHUB_USERNAME","LANGUAGE_SCORE","SCHOOL_MASTER","GPA_MASTER","DATE_MASTER","SCHOOL_BACHELOR","GPA_BACHELOR","DATE_BACHELOR"}
 print("OK" if canonical<=g else f"MISSING {canonical-g}")
 PY`
 Expected: `OK`
@@ -871,7 +877,7 @@ Expected: `OK`
 
 ```bash
 git add skills/resume-optimizer/references/export-formats.md
-git commit -m "feat(resume-optimizer): export-formats.md — rendering rules + <<VAR>> conventions"
+git commit -m "feat(resume-optimizer): export-formats.md — token map + macro-rendering rules"
 ```
 
 - [ ] **Step 5: Complete Task 6's deferred gate** — `python3 scripts/validate.py` (expect `OK`); commit SKILL.md if not already committed in Task 6.3.
@@ -913,148 +919,88 @@ git commit -m "docs(resume-optimizer): add CN/NA + JD + export hooks to resume-r
 
 ---
 
-### Task 11: Templates — LaTeX placeholders, TEMPLATE_GUIDE, HTML, Markdown
+### Task 11: Templates — adopt user LaTeX templates, TEMPLATE_GUIDE, HTML, Markdown
+
+Move the user-supplied LaTeX templates into `templates/latex/` (verbatim) and write `TEMPLATE_GUIDE.md` documenting their 11 tokens + the macro-paste body workflow, plus the HTML/Markdown skeletons.
 
 **Files:**
-- Create: `templates/latex/resume-cn.tex.placeholder`
-- Create: `templates/latex/resume-na.tex.placeholder`
+- Move: `docs/latex_template/resume_cn_template.tex` → `templates/latex/resume-cn.tex`
+- Move: `docs/latex_template/resume_en_template.tex` → `templates/latex/resume-na.tex`
 - Create: `templates/latex/TEMPLATE_GUIDE.md`
 - Create: `templates/html/resume.html`
 - Create: `templates/markdown/resume.md`
+- Remove now-empty `docs/latex_template/` directory.
 
 **Interfaces:**
-- Consumes: canonical `<<VAR>>` set; `templates/json/resume.schema.json`.
-- Produces: templates whose placeholder tokens are exactly the documented set (validator checks this).
+- Consumes: the user's two `.tex` files (their 11-token vocabulary); `templates/json/resume.schema.json`.
+- Produces: templates whose tokens are exactly the documented set (validator enforces: every `<<TOKEN>>` in a `.tex` appears in TEMPLATE_GUIDE).
 
-- [ ] **Step 1: Write `templates/latex/TEMPLATE_GUIDE.md`**
+- [ ] **Step 1: Move the templates with `git mv`**
+
+```bash
+mkdir -p templates/latex templates/html templates/markdown
+git mv docs/latex_template/resume_cn_template.tex templates/latex/resume-cn.tex
+git mv docs/latex_template/resume_en_template.tex templates/latex/resume-na.tex
+rmdir docs/latex_template 2>/dev/null || true
+```
+
+- [ ] **Step 2: Write `templates/latex/TEMPLATE_GUIDE.md`**
 
 ```markdown
 # LaTeX Template Guide
 
-The Export mode substitutes **canonical placeholders** into your `.tex` template. Provide a template that uses exactly these tokens (case-sensitive):
+The built-in templates are `resume-cn.tex` (Chinese, compile with **xelatex** — needs `ctex`) and `resume-na.tex` (English / North-America-oriented, xelatex or pdflatex). They share layout, macros, and section order.
 
-| Token | Filled from schema |
+## Identity / education tokens (auto-filled)
+
+Export substitutes these `<<TOKEN>>` placeholders directly:
+
+| Token | Schema field |
 |---|---|
 | `<<NAME>>` | basics.name |
-| `<<ROLE_OR_TITLE>>` | basics.roleOrTitle |
-| `<<CONTACT>>` | basics (phone / email / location / links, formatted) |
-| `<<SUMMARY>>` | basics.summary |
-| `<<SKILLS>>` | skills[] |
-| `<<EXPERIENCE>>` | work[] |
-| `<<PROJECTS>>` | projects[] |
-| `<<EDUCATION>>` | education[] |
-| `<<AWARDS>>` | awards[] |
+| `<<EMAIL>>` | basics.email |
+| `<<PHONE>>` | basics.phone |
+| `<<GITHUB_USERNAME>>` | basics.githubUsername |
+| `<<LANGUAGE_SCORE>>` | basics.languageScore |
+| `<<SCHOOL_MASTER>>` | education[level=master].institution |
+| `<<GPA_MASTER>>` | education[level=master].score |
+| `<<DATE_MASTER>>` | education[level=master].date |
+| `<<SCHOOL_BACHELOR>>` | education[level=bachelor].institution |
+| `<<GPA_BACHELOR>>` | education[level=bachelor].score |
+| `<<DATE_BACHELOR>>` | education[level=bachelor].date |
+
+## Project / experience / skills body (generated for paste)
+
+The templates ship with a **fictional example** project block (clearly marked). Export does NOT auto-replace it; instead it generates a ready-to-paste block in the templates' own macros for you to swap in:
+
+- Project/work entry:
+  `\resumeProjectHeading{<name>}{<tech stack, joined by " / ">}{<date>}`
+  followed by one `\resumeItem{...}` per bullet (already in CN-STAR or NA-X-Y-Z style from the prior mode).
+- Skill group: one `\item \small ...` line per the template's skill style.
 
 ## Providing your own template
 
-Point Export at your file: ask for "export with template `<path>`". The mode substitutes every `<<TOKEN>>` above and leaves `<<CONFIRM: …>>` markers for values it cannot verify (fill those yourself).
-
-## Built-in placeholders
-
-`resume-cn.tex.placeholder` (CN, compile with `xelatex`) and `resume-na.tex.placeholder` (NA, `pdflatex`/`xelatex`) are empty skeletons demonstrating token placement.
+Ask Export to use a custom file: *"export with template `<path>`"*. Your template must use the same `<<TOKEN>>` names above for auto-fill; Export will still emit the macro-formatted body for you to paste. Leave `<<CONFIRM: …>>` markers for any value Export cannot verify — fill those yourself.
 ```
 
-- [ ] **Step 2: Write `templates/latex/resume-na.tex.placeholder`**
-
-```latex
-% North America resume template (placeholder). Compile with: xelatex resume.tex
-% Export substitutes the <<TOKEN>> placeholders below. Single-column, ATS-friendly.
-\documentclass[11pt,letterpaper]{article}
-\usepackage[margin=0.5in]{geometry}
-\usepackage{titlesec}
-\titleformat{\section}{\large\bfseries}{}{0em}{}[\titlerule]
-\pagenumbering{gobble}
-\begin{document}
-
-\begin{center}
-{\Large \bfseries <<NAME>>}\\
-<<ROLE_OR_TITLE>>\\
-<<CONTACT>>
-\end{center}
-
-<<SUMMARY>>
-
-\section*{Skills}
-<<SKILLS>>
-
-\section*{Experience}
-<<EXPERIENCE>>
-
-\section*{Projects}
-<<PROJECTS>>
-
-\section*{Education}
-<<EDUCATION>>
-
-\section*{Awards}
-<<AWARDS>>
-
-\end{document}
-```
-
-- [ ] **Step 3: Write `templates/latex/resume-cn.tex.placeholder`**
-
-```latex
-% 中国大陆简历模板（占位）。编译：xelatex resume.tex（中文需 xelatex + 中文字体）
-% Export 会替换下方 <<TOKEN>> 占位符。
-\documentclass[11pt,a4paper]{article}
-\usepackage[margin=1.8cm]{geometry}
-\usepackage{xeCJK}
-\setCJKmainfont{Noto Sans CJK SC}
-\usepackage{titlesec}
-\titleformat{\section}{\large\bfseries}{}{0em}{}[\vspace{-0.4em}\titlerule]
-\pagenumbering{gobble}
-\begin{document}
-
-\begin{center}
-{\LARGE \bfseries <<NAME>>}\\
-<<ROLE_OR_TITLE>>\\
-<<CONTACT>>
-\end{center}
-
-\section*{专业技能}
-<<SKILLS>>
-
-\section*{项目经历}
-<<PROJECTS>>
-
-\section*{实习/工作经历}
-<<EXPERIENCE>>
-
-\section*{教育背景}
-<<EDUCATION>>
-
-\section*{荣誉奖项}
-<<AWARDS>>
-
-\end{document}
-```
-
-- [ ] **Step 4: Write `templates/markdown/resume.md`**
+- [ ] **Step 3: Write `templates/markdown/resume.md`**
 
 ```markdown
 # <<NAME>>
-<<ROLE_OR_TITLE>> | <<CONTACT>>
-
-<<SUMMARY>>
-
-## Skills
-<<SKILLS>>
-
-## Experience
-<<EXPERIENCE>>
-
-## Projects
-<<PROJECTS>>
+<<EMAIL>> | <<PHONE>> | github.com/<<GITHUB_USERNAME>>
 
 ## Education
-<<EDUCATION>>
+- <<SCHOOL_MASTER>> — M.S., GPA <<GPA_MASTER>>/4.0 (<<DATE_MASTER>>)
+- <<SCHOOL_BACHELOR>> — B.S., GPA <<GPA_BACHELOR>>/4.0 (<<DATE_BACHELOR>>)
 
-## Awards
-<<AWARDS>>
+## Projects & Experience
+<!-- Paste STAR/X-Y-Z bullets here -->
+
+## Skills
+<!-- Paste skill lines here; English proficiency: <<LANGUAGE_SCORE>> -->
 ```
 
-- [ ] **Step 5: Write `templates/html/resume.html`**
+- [ ] **Step 4: Write `templates/html/resume.html`**
 
 ```html
 <!doctype html>
@@ -1068,28 +1014,36 @@ Point Export at your file: ask for "export with template `<path>`". The mode sub
 </style></head>
 <body>
   <h1><<NAME>></h1>
-  <div class="contact"><<ROLE_OR_TITLE>> &middot; <<CONTACT>></div>
-  <p><<SUMMARY>></p>
-  <h2>Skills</h2><<SKILLS>>
-  <h2>Experience</h2><<EXPERIENCE>>
-  <h2>Projects</h2><<PROJECTS>>
-  <h2>Education</h2><<EDUCATION>>
-  <h2>Awards</h2><<AWARDS>>
+  <div class="contact"><<EMAIL>> &middot; <<PHONE>> &middot; github.com/<<GITHUB_USERNAME>></div>
+  <h2>Education</h2>
+  <ul>
+    <li><<SCHOOL_MASTER>> — M.S., GPA <<GPA_MASTER>>/4.0 (<<DATE_MASTER>>)</li>
+    <li><<SCHOOL_BACHELOR>> — B.S., GPA <<GPA_BACHELOR>>/4.0 (<<DATE_BACHELOR>>)</li>
+  </ul>
+  <h2>Projects &amp; Experience</h2>
+  <!-- Paste bullets here -->
+  <h2>Skills</h2>
+  <!-- Paste skill lines here; English: <<LANGUAGE_SCORE>> -->
 </body></html>
 ```
 
-- [ ] **Step 6: Verify placeholder consistency (validator check 5)**
+- [ ] **Step 5: Verify token consistency (validator check 5)**
 
 Run: `python3 scripts/validate.py`
 Expected: `OK: 1 skill(s), manifests valid, references resolve, template vars documented.`
 
-(If it fails, a `.tex.placeholder` uses a token not in TEMPLATE_GUIDE — align them to the canonical set.)
+If it fails: a `<<TOKEN>>` in `resume-cn.tex` or `resume-na.tex` is not listed in TEMPLATE_GUIDE — add it to the table (the templates use exactly the 11 tokens above, so this should pass).
+
+- [ ] **Step 6: Spot-check both templates still contain their tokens**
+
+Run: `grep -c "<<NAME>>" templates/latex/resume-cn.tex templates/latex/resume-na.tex`
+Expected: `1` `1`.
 
 - [ ] **Step 7: Commit**
 
 ```bash
-git add templates/latex templates/html templates/markdown
-git commit -m "feat: add LaTeX/HTML/Markdown resume templates + TEMPLATE_GUIDE"
+git add templates/latex templates/html templates/markdown docs/latex_template
+git commit -m "feat: adopt user LaTeX templates + TEMPLATE_GUIDE + HTML/Markdown skeletons"
 ```
 
 ---
@@ -1328,5 +1282,5 @@ git commit -m "docs: finalize EN/ZH READMEs; cross-platform verification"
 
 - **Spec coverage:** All 6 capabilities mapped — polish (T6), code→resume (T12), review (T6), mock-interview (T13), CN↔NA (T7 + Localize mode T6), JD-match (T8 + mode T6). LaTeX-first export (T5 schema + T9 + T11). Cross-platform manifests (T2). OSS facade (T4/T15). Authenticity red line embedded in every relevant task.
 - **Placeholder scan:** None. Every code step shows complete code; every content step gives exact outline + acceptance grep checks.
-- **Type/name consistency:** Canonical `<<VAR>>` set is identical across Global Constraints, Task 5 schema descriptions, Task 6, Task 9, Task 11. Validator (Task 3) enforces template↔TEMPLATE_GUIDE consistency. Skill dir names match frontmatter `name` (validator enforces). `validate(root)` signature stable across Task 3 → tests.
+- **Type/name consistency:** The 11 identity/education tokens (reconciled to the user-supplied templates) are identical across Global Constraints, Task 5 schema, Task 6 Export mode, Task 9 token map, and Task 11 TEMPLATE_GUIDE. The validator enforces that every `<<TOKEN>>` in `resume-cn.tex`/`resume-na.tex` is documented in TEMPLATE_GUIDE. Skill dir names match frontmatter `name` (validator enforces). `validate(root)` signature stable across Task 3 → tests.
 - **Known sequencing caveat:** Task 6's SKILL.md links to files created in T7–T9, so T6's validator/commit is deferred until after T7–T9 (documented inline in T6). Execution in T-order with that deferral keeps every commit green.
