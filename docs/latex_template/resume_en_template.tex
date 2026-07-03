@@ -1,0 +1,200 @@
+% =====================================================================
+% Programmer Resume — LaTeX Template (English)
+%
+% Usage:
+%   1. Search for <<  and replace every <<VAR>> placeholder with your info.
+%   2. The "Projects & Internship Experience" block is a [FICTIONAL EXAMPLE]
+%      included only to demonstrate STAR phrasing and layout — replace the
+%      whole block with your own real experience.
+%   3. Build with: xelatex resume_en_template.tex
+%      (Faithful mirror of resume_cn_template.tex: identical layout, macros,
+%       section order, and bullet style. Only ctex is dropped — not needed
+%       for English; fontspec is kept so both files share the xelatex toolchain.)
+%
+% Placeholders:
+%   <<NAME>>  <<EMAIL>>  <<PHONE>>  <<GITHUB_USERNAME>>
+%   <<SCHOOL_MASTER>>   <<GPA_MASTER>>   <<DATE_MASTER>>
+%   <<SCHOOL_BACHELOR>> <<GPA_BACHELOR>> <<DATE_BACHELOR>>
+%   <<LANGUAGE_SCORE>>
+% =====================================================================
+\documentclass[a4paper,11pt]{article}
+
+% Page margins
+\usepackage[left=1.0cm,right=1.0cm,top=0.5cm,bottom=0.5cm]{geometry}
+% Icons
+\usepackage{fontawesome5}
+% List control
+\usepackage{enumitem}
+% Section formatting
+\usepackage{titlesec}
+% Color
+\usepackage{xcolor}
+% Hyperlinks
+\usepackage{hyperref}
+% Table enhancements
+\usepackage{array}
+\usepackage{fontspec}
+\hypersetup{
+  colorlinks=true,
+  urlcolor=black
+}
+
+% No page numbers
+\pagestyle{empty}
+
+% section style
+\titleformat{\section}{\large\bfseries\raggedright}{}{0em}{}[\titlerule]
+\titlespacing{\section}{0pt}{8pt}{4pt}
+
+% Global list spacing (outer)
+\setlist[itemize]{
+  topsep=2pt,
+  itemsep=2pt,
+  parsep=0pt,
+  partopsep=0pt
+}
+
+%------------------------------------------------
+% Custom commands
+%------------------------------------------------
+
+% Education: date range on the right of the first line; second line right stays empty
+\newcommand{\resumeEduSubheading}[3]{
+  \item
+  \begin{tabular*}{\linewidth}[t]{@{}l@{\extracolsep{\fill}}r@{}}
+    \textbf{#1} & \small #2 \\
+    \textit{\small #3} &
+  \end{tabular*}\vspace{1pt}
+}
+
+% Education supplementary line: left-aligned, wraps to line width inside itemize
+\newcommand{\resumeEduLine}[1]{%
+  \noindent\parbox[t]{\linewidth}{\small #1}\par
+}
+
+% Project heading (left: name + stack, right: date) — tightens heading-to-description spacing
+\newcommand{\resumeProjectHeading}[3]{
+  \item
+  \begin{tabular*}{\linewidth}{@{}l@{\extracolsep{\fill}}r@{}}
+    \colorbox{gray!20}{\textbf{#1}} \quad \textit{\small #2} & \small #3
+  \end{tabular*}\vspace{0pt}
+}
+
+\newcommand{\resumeItem}[1]{\item \small{#1}}
+
+\newcommand{\invisible}[1]{%
+  {%
+    \special{pdf:literal direct 3 Tr}%
+    #1%
+    \special{pdf:literal direct 0 Tr}%
+  }%
+}
+
+\begin{document}
+
+%------------------------------------------------
+% Header (replace the four placeholders below with your info)
+%------------------------------------------------
+\begin{center}
+  {\LARGE \bfseries <<NAME>>} \\[6pt]
+  \small
+  \faEnvelope\ \href{mailto:<<EMAIL>>}{<<EMAIL>>} \quad
+  \faPhone\ <<PHONE>> \quad
+  \faGithub\ \href{https://github.com/<<GITHUB_USERNAME>>}{github.com/<<GITHUB_USERNAME>>}
+\end{center}
+
+%------------------------------------------------
+% Education (school / GPA / dates are placeholders; major and courses are sample text)
+%------------------------------------------------
+\section{\textcolor{blue!60!black}{Education}}
+
+\begin{itemize}[label={},leftmargin=0pt]
+
+\resumeEduSubheading
+{<<SCHOOL_MASTER>> \quad M.S.}
+{\quad <<DATE_MASTER>>}
+{Master of Engineering in Computer Science \quad GPA: <<GPA_MASTER>>/4.0}
+\resumeEduLine{\textbf{Core Courses:} Distributed Systems, High-Performance Computing, Compilers, Data Structures \& Algorithms (C++), Software Engineering}
+
+\vspace{3pt}
+
+\resumeEduSubheading
+{<<SCHOOL_BACHELOR>> \quad B.S.}
+{\quad <<DATE_BACHELOR>>}
+{Bachelor of Science in Computer Science \quad GPA: <<GPA_BACHELOR>>/4.0}
+\resumeEduLine{\textbf{Core Courses:} Operating Systems, Computer Networks, Databases, Object-Oriented Programming, Machine Learning, Discrete Mathematics}
+
+\end{itemize}
+
+
+%------------------------------------------------
+% Projects & Internship Experience (the entries below are [FICTIONAL EXAMPLES] — replace with your own)
+%------------------------------------------------
+\section{\textcolor{blue!60!black}{Projects \& Internship Experience}}
+
+\begin{itemize}[label={},leftmargin=0pt]
+
+\resumeProjectHeading
+{Example Tech Co. Backend R\&D Intern - Enterprise Data-Query MCP Service}
+{Python / FastAPI / MCP / PostgreSQL}
+{2024.06 -- 2024.09}
+\begin{itemize}[label={$\bullet$},leftmargin=0.15in,topsep=0pt,itemsep=1pt]
+
+  \resumeItem{To standardize access between LLM clients and the company data warehouse, designed and built an MCP server on \textbf{FastAPI + MCP SDK}, unifying \textbf{stdio and streaming HTTP} transports and wiring the full path from \textbf{tools/call} through to \textbf{SQL execution}.}
+
+  \resumeItem{Built a \textbf{modular Tools/Resources/Prompts architecture} with a unified tool router, integrating \textbf{SQL query, metadata extraction, execution-plan analysis, and slow-query monitoring} tools to improve operability and extensibility.}
+
+  \resumeItem{Improved concurrency stability with an \textbf{asyncpg} async connection pool and heartbeat probing, combined with query timeout and connection self-healing, cutting the online request failure rate caused by connection errors to \textbf{below 0.1\%}.}
+
+  \resumeItem{Built a \textbf{JWT}-based auth scheme with \textbf{SQL-injection detection and dangerous-keyword interception} in the execution path, and supported \textbf{token-bound datasource config} with hot-reload for no-downtime switching.}
+
+  \resumeItem{Ran in production for \textbf{90 consecutive days at 99.9\% core-API availability}, 200+ daily tool calls; migrated query delivery from manual serial work to a \textbf{minute-level API pipeline}, shortening the typical delivery cycle by about \textbf{70\%}.}
+
+\end{itemize}
+\resumeProjectHeading
+{AgentHub - Lightweight Multi-Channel AI Agent Framework in Go}
+{Go / Eino / NATS / Docker}
+{2024.11}
+\begin{itemize}[label={$\bullet$},leftmargin=0.15in,topsep=0pt,itemsep=1pt]
+  \resumeItem{A ReAct agent service built on the \textbf{Eino framework}, wiring an \textbf{event-bus $\to$ agent loop $\to$ tool/LLM} pipeline to enable \textbf{multi-channel message ingestion, routing, and unified response dispatch} (Web / API / IM).}
+
+  \resumeItem{Abstracted \textbf{modular components (Gateway, Channel Manager, Agent Manager, Scheduler)} with config-driven extension of channels and tools, providing clean backend layering and maintainability.}
+
+  \resumeItem{Implemented a unified tool-execution framework (HTTP, database, shell, retrieval) with \textbf{parameter validation, RBAC, and Docker-sandbox isolation}, plus dangerous-command detection, timeout control, and output truncation.}
+
+  \resumeItem{Persisted events and sessions via \textbf{NATS} with full message and tool-call traces, ensuring context consistency and traceability.}
+
+  \resumeItem{Slimmed the service while preserving agent capability: \textbf{85\% lower memory, <40MB image, <1.5s cold start}, deployable on low-spec edge devices.}
+\end{itemize}
+
+\resumeProjectHeading
+{FeedFlow - High-Concurrency Content Feed Platform in Go}
+{Go / Gin / MySQL / Redis / Kafka / Docker}
+{2025.01}
+\begin{itemize}[label={$\bullet$},leftmargin=0.15in,topsep=0pt,itemsep=1pt]
+  \resumeItem{Refactored an open-source project into modular components and submitted PRs, introducing a message queue and multi-level cache to relieve read/write bottlenecks on content-feed endpoints under high concurrency.}
+
+  \resumeItem{Designed a \textbf{local + distributed multi-level cache} on \textbf{Redis} with \textbf{mutex anti-breakdown and write-through invalidation}, cutting hot-read DB QPS by \textbf{60\%} and list-endpoint P95 latency from \textbf{280ms to 110ms}.}
+
+  \resumeItem{Replaced synchronous blocking on the like/comment write path under burst traffic with a \textbf{Kafka}-driven event architecture (API emits events, workers persist and aggregate counts), reducing average write-path latency by \textbf{50\%} and lifting peak throughput by about \textbf{1.6x}.}
+
+  \resumeItem{Safeguarded availability and consistency with \textbf{MQ-produce-failure fallback writes, consumer-side idempotency, and cache-invalidation linkage}, preventing "request succeeded but data not persisted" and count skew from duplicate consumption.}
+
+\end{itemize}
+
+\end{itemize}
+%------------------------------------------------
+% Technical Skills (sample content, adjust as needed)
+%------------------------------------------------
+\section{\textcolor{blue!60!black}{Technical Skills}}
+
+\begin{itemize}[label={$\bullet$},leftmargin=0.15in]
+
+  \item \small Familiar with \textbf{TCP/IP, HTTP}, and other network protocols; solid grasp of \textbf{concurrency models (processes/threads, locks, synchronization)}.
+
+  \item \small Proficient with \textbf{MySQL / PostgreSQL}; experienced with \textbf{Redis} usage and data structures; understand \textbf{Kafka} fundamentals and use cases, LRU, and distributed caching. Fluent with \textbf{Git}, CI/CD workflows, \textbf{Docker}, and Linux.
+
+  \item \small Languages: English (fluent, \textbf{<<LANGUAGE_SCORE>>})
+\end{itemize}
+
+\end{document}
