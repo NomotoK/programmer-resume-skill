@@ -1,6 +1,6 @@
 # CN ⇄ NA Software-Engineer Résumé Conversion Guide
 
-> Research date: 2026-07-02. Reference for a tool that **re-shapes** (not translates) SWE/IT résumés between Mainland China (校招/社招) and North America (US/Canada). This is the source material for `skills/resume-optimizer/references/cn-na-market.md`. Companion CN-only detail: `2026-07-02-cn-resume-norms.md`.
+> Research date: 2026-07-02. Reference for a tool that **re-shapes** (not translates) SWE/IT résumés between Mainland China (校招/社招) and North America (US/Canada). This is the source material for `skills/resume-optimizer/references/cn-na-market.md`. Companion deep-dives: CN-only detail `2026-07-02-cn-resume-norms.md`; NA-only detail `2026-07-02-na-resume-norms.md` (verified via deep-research workflow — 23/25 claims survived adversarial voting).
 >
 > Research note: WebSearch/WebFetch were blocked; sourcing done via curl + text extraction. Reddit/Indeed/Zety/EEOC were bot-blocked, so r/cscareerquestions consensus is represented via Tech Interview Handbook + career-service guides, and US legal claims anchored in Cornell LII + usa.gov. Google X-Y-Z attributed to Laszlo Bock via Novoresume.
 

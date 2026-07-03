@@ -1,7 +1,7 @@
 # 中国大陆软件/IT 岗位简历规范研究报告
 
 > 研究日期：2026-07-02。来源为一线大厂面试官投稿与头部技术社区（字节 ADFE、JavaGuide、云舒编程、决战BAT柠檬哥、牛客等），均带原始 URL。
-> 本文件是 `skills/resume-optimizer/references/cn-na-market.md` 的**中国侧原始素材**。北美侧待实现阶段补充专门调研后合并。
+> 本文件是 `skills/resume-optimizer/references/cn-na-market.md` 的**中国侧原始素材**。北美侧已补充专门调研，见 `2026-07-02-na-resume-norms.md`；CN↔NA 双向转换见 `2026-07-02-cn-na-conversion-guide.md`。
 
 ## 落地清单（TL;DR）
 
@@ -158,4 +158,4 @@ ATS/关键词：中国无美式独立 ATS 生态，但大厂+平台有关键词/
 - 牛客网 nowcoder.com
 - 程序员鱼皮 liyupi / 编程导航 code-nav（本 skill 原始素材来源）
 
-> 研究方法备注：WebSearch/WebFetch 环境故障，zhihu/juejin 网页版/sogou 反爬，实质内容主要经 juejin 搜索 API + 文章 SSR HTML + CSDN 用 curl 抓取。北美侧调研偏薄，需实现阶段补充。
+> 研究方法备注：WebSearch/WebFetch 环境故障，zhihu/juejin 网页版/sogou 反爬，实质内容主要经 juejin 搜索 API + 文章 SSR HTML + CSDN 用 curl 抓取。北美侧已通过 deep-research 工作流补充专门调研（见 `2026-07-02-na-resume-norms.md`）。
