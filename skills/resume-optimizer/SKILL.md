@@ -1,5 +1,5 @@
 ---
-name: programmer-resume-optimizer
+name: resume-optimizer
 description: Write, rewrite, and optimize software engineer resumes for internship or full-time applications with role-targeted positioning, STAR-based project bullets, quantified outcomes, and authenticity safeguards. Use when users ask to draft a new developer resume, improve an existing resume, tailor resume content to a JD, polish project/skills sections, increase interview reply rate, or run a quality review checklist before submission.
 ---
 
