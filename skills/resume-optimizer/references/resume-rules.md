@@ -1,5 +1,9 @@
 # Programmer Resume Rules
 
+## Market-aware mode
+
+These rules are the universal core. For market-specific differences (CN vs NA) see [cn-na-market.md](cn-na-market.md); for JD tailoring see [jd-matching.md](jd-matching.md); for export see [export-formats.md](export-formats.md).
+
 ## Table of Contents
 
 1. Scope
@@ -58,6 +62,8 @@ Length guidance:
 - More than one page is acceptable only when content is truly strong and dense.
 - Ensure highest-value content appears on page one.
 
+Market note: Page/section norms differ by market — CN new-grad 1 page; NA trim to last 10–15 yr. See [cn-na-market.md](cn-na-market.md).
+
 ## 4. Writing Rules by Section
 
 ### 4.1 Personal Information
@@ -97,6 +103,8 @@ Rules:
 Preferred pattern:
 - `掌握/熟悉 {技术}，在 {项目场景} 中用于 {目标}，实现 {结果}`。
 
+Market note: CN uses 了解/熟悉/熟练掌握 tiers (校招 never 精通); NA uses a tier-less categorized line. See [cn-na-market.md](cn-na-market.md).
+
 ### 4.4 Project Experience
 
 Rules:
@@ -122,6 +130,8 @@ Rewrite examples:
 
 - Weak: `做了前后端开发。`
 - Better: `独立完成需求拆解、数据库设计与前后端联调，交付 6 个核心模块并将迭代周期从双周缩短至 1 周。`
+
+Market note: NA variant: action verb + X-Y-Z ('Accomplished X as measured by Y by doing Z'), never 'Responsible for'. See [cn-na-market.md](cn-na-market.md).
 
 ## 6. Optimization Dimensions for Highlights
 
@@ -204,3 +214,5 @@ For each highlighted project, prepare answers to:
 - Why choose this technical solution instead of alternatives?
 - What is the measurable effect and how was it measured?
 - Is the project deployed or demonstrable?
+
+These 6 questions seed the mock-interview sub-skill.
