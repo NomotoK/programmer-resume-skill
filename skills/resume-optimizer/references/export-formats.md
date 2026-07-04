@@ -56,7 +56,7 @@ Projects, work, and skills are **not** tokens. Export emits them as ready-to-pas
 For each `projects[]` and `work[]` entry, emit one heading line followed by one `\resumeItem{...}` per highlight bullet:
 
 ```latex
-\resumeProjectHeading{<name>}{<techstack joined by ` / `>}{<date>}{}
+\resumeProjectHeading{<name>}{<techstack joined by ` / `>}{<date>}
   \resumeItem{<highlight bullet 1, escaped>}
   \resumeItem{<highlight bullet 2, escaped>}
   \resumeItem{<highlight bullet 3, escaped>}
@@ -103,14 +103,14 @@ Field mapping: `skills[i].category` (NA) or `skills[i].tier` (CN) → the bold l
 
 ### 3.3 Awards (optional)
 
-If `awards[]` is non-empty and the market conventions allow the section (CN: always allowed; NA: only for new-grad or notable), emit one `\item` per award under an `Awards` heading:
+If `awards[]` is non-empty and the market conventions allow the section (CN: always allowed; NA: only for new-grad or notable), emit one `\item` per award. The user-supplied templates define no `Awards` section and no Awards-specific macro, so Export emits only plain `\item` lines (one per award) under a section heading the template already provides or the user inserts:
 
 ```latex
-\resumeSubheading{Awards}{}{}{}
-  \item \small <awards[i].title> — <awards[i].awarder>, <awards[i].date>
+% Under a section heading the template provides or the user inserts (e.g. \section{Awards})
+\item \small <awards[i].title> — <awards[i].awarder>, <awards[i].date>
 ```
 
-Drop the entire section if `awards[]` is empty — never fabricate awards.
+If the template has no `Awards` section, Export notes that and the user adds the heading themselves — Export must **not** invent macros (e.g. a subheading command) or sections the template doesn't define. Drop the entire section if `awards[]` is empty — never fabricate awards.
 
 ---
 
