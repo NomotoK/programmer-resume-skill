@@ -23,6 +23,12 @@ REQUIRED_EXPORT_ASSETS = (
     "templates/markdown/resume.md",
     "templates/json/resume.schema.json",
 )
+TEMPLATE_MARKER_FORMATS = (
+    ("templates/latex/resume-cn.tex", "% RESUME-SKILL:BEGIN ", "% RESUME-SKILL:END ", ""),
+    ("templates/latex/resume-na.tex", "% RESUME-SKILL:BEGIN ", "% RESUME-SKILL:END ", ""),
+    ("templates/html/resume.html", "<!-- RESUME-SKILL:BEGIN ", "<!-- RESUME-SKILL:END ", " -->"),
+    ("templates/markdown/resume.md", "<!-- RESUME-SKILL:BEGIN ", "<!-- RESUME-SKILL:END ", " -->"),
+)
 
 
 def _parse_frontmatter(text):
@@ -42,6 +48,24 @@ def _load_json(path):
         return json.loads(path.read_text(encoding="utf-8")), None
     except Exception as e:  # noqa: BLE001
         return None, f"{path}: invalid JSON ({e})"
+
+
+def _validate_template_contract(path, begin_prefix, end_prefix, suffix, declared, err):
+    text = path.read_text(encoding="utf-8")
+    used = set(PLACEHOLDER_RE.findall(text))
+    for token in sorted(used - declared):
+        err(f"{path.name}: placeholder <<{token}>> not documented in TEMPLATE_GUIDE.md")
+    for token in sorted(used - HEADER_TOKENS):
+        err(f"{path.name}: unsupported template token <<{token}>>")
+    for region in REGION_NAMES:
+        begin_marker = f"{begin_prefix}{region}{suffix}"
+        end_marker = f"{end_prefix}{region}{suffix}"
+        begin_count = text.count(begin_marker)
+        end_count = text.count(end_marker)
+        if begin_count != 1 or end_count != 1:
+            err(f"{path.name}: template region {region} must have exactly one BEGIN and one END marker")
+        elif text.index(begin_marker) > text.index(end_marker):
+            err(f"{path.name}: template region {region} markers are in the wrong order")
 
 
 def validate(root: Path = DEFAULT_ROOT):
@@ -114,24 +138,11 @@ def validate(root: Path = DEFAULT_ROOT):
     guide = root / "templates/latex/TEMPLATE_GUIDE.md"
     if guide.is_file():
         declared = set(PLACEHOLDER_RE.findall(guide.read_text(encoding="utf-8")))
-        latex_dir = root / "templates/latex"
-        for tex_name in ("resume-cn.tex", "resume-na.tex"):
-            tex = latex_dir / tex_name
-            if not tex.is_file():
+        for rel, begin_prefix, end_prefix, suffix in TEMPLATE_MARKER_FORMATS:
+            template = root / rel
+            if not template.is_file():
                 continue
-            text = tex.read_text(encoding="utf-8")
-            used = set(PLACEHOLDER_RE.findall(text))
-            for v in sorted(used - declared):
-                err(f"{tex_name}: placeholder <<{v}>> not documented in TEMPLATE_GUIDE.md")
-            for v in sorted(used - HEADER_TOKENS):
-                err(f"{tex_name}: unsupported template token <<{v}>>")
-            for region in REGION_NAMES:
-                begin = text.count(f"% RESUME-SKILL:BEGIN {region}")
-                end = text.count(f"% RESUME-SKILL:END {region}")
-                if begin != 1 or end != 1:
-                    err(
-                        f"{tex_name}: template region {region} must have exactly one BEGIN and one END marker"
-                    )
+            _validate_template_contract(template, begin_prefix, end_prefix, suffix, declared, err)
 
     html = root / "templates/html/resume.html"
     if html.is_file():
@@ -152,7 +163,7 @@ def main():
             print(f"  - {e}")
         sys.exit(1)
     n = len([d for d in (DEFAULT_ROOT / "skills").iterdir() if d.is_dir()]) if (DEFAULT_ROOT / "skills").is_dir() else 0
-    print(f"OK: {n} skill(s), manifests valid, references resolve, template vars documented.")
+    print(f"OK: {n} skill(s), manifests valid, references resolve, export contracts valid.")
 
 
 if __name__ == "__main__":

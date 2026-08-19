@@ -3,7 +3,13 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from scripts.render_smoke import compile_tex, escape_latex, find_xelatex, render_fixture
+from scripts.render_smoke import (
+    compile_all_fixtures,
+    compile_tex,
+    escape_latex,
+    find_xelatex,
+    render_fixture,
+)
 
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -33,9 +39,22 @@ class RenderSmokeTests(unittest.TestCase):
         self.assertNotIn("LANGUAGE_SCORE", rendered)
         self.assertNotIn("Proficient", rendered)
 
+    @unittest.skipIf(find_xelatex() is None, "XeLaTeX is not installed")
+    def test_missing_header_value_keeps_a_compile_safe_visible_marker(self):
+        data = self._fixture("minimal-na.json")
+        del data["basics"]["githubUsername"]
+        rendered = render_fixture(ROOT / "templates/latex/resume-na.tex", data, "NA")
+        self.assertIn("MISSING\\_GITHUB\\_USERNAME", rendered)
+        with tempfile.TemporaryDirectory() as directory:
+            tex_path = Path(directory) / "resume-na.tex"
+            tex_path.write_text(rendered, encoding="utf-8")
+            compile_tex(tex_path)
+            self.assertTrue(tex_path.with_suffix(".pdf").is_file())
+
     def test_escape_latex_handles_resume_special_characters(self):
         self.assertEqual(
-            escape_latex("C# & 95% at foo_bar"), "C\\# \\& 95\\% at foo\\_bar"
+            escape_latex("C# & 95% at foo_bar^"),
+            "C\\# \\& 95\\% at foo\\_bar\\textasciicircum{}",
         )
 
     @unittest.skipIf(find_xelatex() is None, "XeLaTeX is not installed")
@@ -50,6 +69,12 @@ class RenderSmokeTests(unittest.TestCase):
             )
             compile_tex(tex_path)
             self.assertTrue(tex_path.with_suffix(".pdf").is_file())
+
+    @unittest.skipIf(find_xelatex() is None, "XeLaTeX is not installed")
+    def test_all_built_in_fixture_exports_compile(self):
+        with tempfile.TemporaryDirectory() as directory:
+            outputs = compile_all_fixtures(ROOT, Path(directory))
+            self.assertEqual({path.name for path in outputs}, {"resume-cn.pdf", "resume-na.pdf"})
 
 
 if __name__ == "__main__":

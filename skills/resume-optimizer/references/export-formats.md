@@ -17,7 +17,7 @@ Substitute and LaTeX-escape only these four tokens:
 | `<<PHONE>>` | `basics.phone` |
 | `<<GITHUB_USERNAME>>` | `basics.githubUsername` |
 
-If a value is unavailable, leave its token visible and list it in the export summary. No other `<<TOKEN>>` is valid in a built-in template.
+If a value is unavailable, leave a visible `MISSING_<TOKEN>` marker and list it in the export summary. In LaTeX output, escape that marker before insertion. No other `<<TOKEN>>` is valid in a built-in template.
 
 ### Generated regions
 
@@ -40,7 +40,7 @@ Use the templates' macros and preserve their preamble. If a region is empty, lea
 
 ## Escaping
 
-Escape every substituted or generated LaTeX value exactly once: `%` → `\%`, `&` → `\&`, `_` → `\_`, `#` → `\#`, `$` → `\$`, `{`/`}` → `\{`/`\}`, `\` → `\textbackslash{}`, and `~` → `\textasciitilde{}`. CJK characters need no escape under XeLaTeX + ctex.
+Escape every substituted or generated LaTeX value exactly once: `%` → `\%`, `&` → `\&`, `_` → `\_`, `#` → `\#`, `^` → `\textasciicircum{}`, `$` → `\$`, `{`/`}` → `\{`/`\}`, `\` → `\textbackslash{}`, and `~` → `\textasciitilde{}`. CJK characters need no escape under XeLaTeX + ctex.
 
 ## Other formats
 

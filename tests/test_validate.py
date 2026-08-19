@@ -12,7 +12,17 @@ VALID_TEMPLATE = """<<NAME>> <<EMAIL>> <<PHONE>> <<GITHUB_USERNAME>>
 % RESUME-SKILL:END SKILLS
 """
 VALID_HTML = """<style>@page { size: A4; margin: 0.5in; }</style>
-<header></header><main><section></section></main>
+<header></header><main><section><!-- RESUME-SKILL:BEGIN EDUCATION --><!-- RESUME-SKILL:END EDUCATION --></section>
+<section><!-- RESUME-SKILL:BEGIN EXPERIENCE --><!-- RESUME-SKILL:END EXPERIENCE --></section>
+<section><!-- RESUME-SKILL:BEGIN SKILLS --><!-- RESUME-SKILL:END SKILLS --></section></main>
+"""
+VALID_MARKDOWN = """# <<NAME>>
+<!-- RESUME-SKILL:BEGIN EDUCATION -->
+<!-- RESUME-SKILL:END EDUCATION -->
+<!-- RESUME-SKILL:BEGIN EXPERIENCE -->
+<!-- RESUME-SKILL:END EXPERIENCE -->
+<!-- RESUME-SKILL:BEGIN SKILLS -->
+<!-- RESUME-SKILL:END SKILLS -->
 """
 
 class ValidateTests(unittest.TestCase):
@@ -32,7 +42,7 @@ class ValidateTests(unittest.TestCase):
             "templates/latex/resume-cn.tex": VALID_TEMPLATE,
             "templates/latex/resume-na.tex": VALID_TEMPLATE,
             "templates/html/resume.html": VALID_HTML,
-            "templates/markdown/resume.md": "# Resume\n",
+            "templates/markdown/resume.md": VALID_MARKDOWN,
             "templates/json/resume.schema.json": "{}\n",
         }
 
@@ -88,6 +98,14 @@ class ValidateTests(unittest.TestCase):
         )
         self.assertTrue(any("EDUCATION" in e and "region" in e for e in self._run(files)))
 
+    def test_reversed_export_region_fails(self):
+        files = self._base()
+        files["templates/latex/resume-cn.tex"] = VALID_TEMPLATE.replace(
+            "% RESUME-SKILL:BEGIN EDUCATION\n% RESUME-SKILL:END EDUCATION",
+            "% RESUME-SKILL:END EDUCATION\n% RESUME-SKILL:BEGIN EDUCATION",
+        )
+        self.assertTrue(any("EDUCATION" in e and "order" in e for e in self._run(files)))
+
     def test_legacy_language_token_fails(self):
         files = self._base()
         files["templates/latex/resume-na.tex"] = VALID_TEMPLATE.replace(
@@ -99,6 +117,20 @@ class ValidateTests(unittest.TestCase):
         files = self._base()
         files["templates/html/resume.html"] = "<h1>Resume</h1>"
         self.assertTrue(any("HTML" in e and "semantic" in e for e in self._run(files)))
+
+    def test_html_without_export_region_fails(self):
+        files = self._base()
+        files["templates/html/resume.html"] = VALID_HTML.replace(
+            "<!-- RESUME-SKILL:END SKILLS -->", ""
+        )
+        self.assertTrue(any("resume.html" in e and "SKILLS" in e for e in self._run(files)))
+
+    def test_markdown_unsupported_token_fails(self):
+        files = self._base()
+        files["templates/markdown/resume.md"] = VALID_MARKDOWN.replace(
+            "<<NAME>>", "<<NAME>> <<LANGUAGE_SCORE>>"
+        )
+        self.assertTrue(any("resume.md" in e and "LANGUAGE_SCORE" in e for e in self._run(files)))
 
 if __name__ == "__main__":
     unittest.main()

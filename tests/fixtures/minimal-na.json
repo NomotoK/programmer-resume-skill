@@ -17,10 +17,10 @@
   ],
   "projects": [
     {
-      "name": "Terminology Search",
+      "name": "Terminology_Search",
       "techStack": ["Python", "FastAPI"],
       "date": "2024",
-      "highlights": ["Built a searchable terminology API."]
+      "highlights": ["Built C# & Bash tooling that cut cost by 5% (value $10) for {pilot} at C:\\tmp~^."]
     }
   ],
   "skills": [{"category": "Languages", "items": ["Python", "TypeScript"]}]

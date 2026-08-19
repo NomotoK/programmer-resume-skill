@@ -19,6 +19,7 @@ ESCAPES = {
     "&": r"\&",
     "_": r"\_",
     "#": r"\#",
+    "^": r"\textasciicircum{}",
     "$": r"\$",
     "{": r"\{",
     "}": r"\}",
@@ -108,8 +109,8 @@ def render_fixture(template, data, market):
     basics = data.get("basics", {})
     for token, field in HEADER_FIELDS.items():
         value = basics.get(field)
-        if value is not None:
-            text = text.replace(f"<<{token}>>", escape_latex(value))
+        replacement = value if value is not None else f"MISSING_{token}"
+        text = text.replace(f"<<{token}>>", escape_latex(replacement))
     return _replace_region(
         _replace_region(
             _replace_region(text, "EDUCATION", _education_block(data)),
@@ -140,6 +141,24 @@ def compile_tex(tex_path):
         text=True,
         capture_output=True,
     )
+
+
+def compile_all_fixtures(root, output_dir):
+    root = Path(root)
+    output_dir = Path(output_dir)
+    outputs = []
+    for template_name, fixture_name, market in (
+        ("resume-cn.tex", "minimal-cn.json", "CN"),
+        ("resume-na.tex", "minimal-na.json", "NA"),
+    ):
+        template = root / "templates" / "latex" / template_name
+        fixture = root / "tests" / "fixtures" / fixture_name
+        tex_path = output_dir / template_name
+        data = json.loads(fixture.read_text(encoding="utf-8"))
+        tex_path.write_text(render_fixture(template, data, market), encoding="utf-8")
+        compile_tex(tex_path)
+        outputs.append(tex_path.with_suffix(".pdf"))
+    return outputs
 
 
 def main():
