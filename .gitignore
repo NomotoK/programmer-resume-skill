@@ -1,5 +1,6 @@
 # Byte-compiled / optimized / DLL files
 __pycache__/
+.worktrees/
 *.py[codz]
 *$py.class
 
@@ -219,4 +220,3 @@ __marimo__/
 
 # OS
 .DS_Store
-
