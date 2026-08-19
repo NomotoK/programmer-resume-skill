@@ -1,6 +1,6 @@
 # Export Contract v2 Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking.
 
 **Goal:** Replace the ambiguous 11-token export contract with marker-based generated sections, make XeLaTeX verification reproducible, and keep all documentation and validation synchronized.
 
@@ -33,9 +33,9 @@
 - `requirements-dev.txt` supplies `pytest>=8,<9`.
 - Fixtures contain a bachelor-only, non-CS education record; the NA fixture has no language score.
 
-- [ ] Add tests that expect v2 region validation and required template assets; run pytest and confirm they fail because v1 validation lacks those checks.
-- [ ] Add the minimal dependency declaration and fixture inputs.
-- [ ] Commit the red tests and baseline files.
+- [x] Add tests that expect v2 region validation and required template assets; run pytest and confirm they fail because v1 validation lacks those checks.
+- [x] Add the minimal dependency declaration and fixture inputs.
+- [x] Commit the red tests and baseline files.
 
 ### Task 2: Implement the template-contract validator
 
@@ -47,9 +47,9 @@
 - `validate(root: Path = DEFAULT_ROOT) -> list[str]` remains stable.
 - Module constants define the four header tokens and three region names.
 
-- [ ] Implement exact header-token validation, required asset checks, balanced/exactly-once region checks, and HTML semantic/print checks.
-- [ ] Run the focused pytest cases and confirm green.
-- [ ] Commit the validator and tests.
+- [x] Implement exact header-token validation, required asset checks, balanced/exactly-once region checks, and HTML semantic/print checks.
+- [x] Run the focused pytest cases and confirm green.
+- [x] Commit the validator and tests.
 
 ### Task 3: Convert the schema, templates, and export instructions to v2
 
@@ -67,9 +67,9 @@
 - `education[]` is rendered as a generated region rather than an identity-token map.
 - The Export mode states `xelatex` as the sole built-in compiler and exposes the three replacement regions.
 
-- [ ] Update the docs and templates together so no source describes the old 11-token protocol.
-- [ ] Ensure NA has no fixed language-score row and neither template hard-codes degree, major, or courses.
-- [ ] Run the validator and commit the coherent v2 contract.
+- [x] Update the docs and templates together so no source describes the old 11-token protocol.
+- [x] Ensure NA has no fixed language-score row and neither template hard-codes degree, major, or courses.
+- [x] Run the validator and commit the coherent v2 contract.
 
 ### Task 4: Add deterministic XeLaTeX smoke verification
 
@@ -82,9 +82,9 @@
 - `render_fixture(template: Path, data: dict, market: str) -> str` substitutes header tokens and all three regions for fixture verification.
 - `find_xelatex() -> Path | None` searches `/Library/TeX/texbin/xelatex` before `PATH`.
 
-- [ ] Write failing tests for bachelor-only/non-CS education, NA language omission, and LaTeX special-character escaping.
-- [ ] Implement the smallest smoke renderer and fixture compilation command.
-- [ ] Run unit tests, validator, and both XeLaTeX fixture compilations; commit the verifier.
+- [x] Write failing tests for bachelor-only/non-CS education, NA language omission, and LaTeX special-character escaping.
+- [x] Implement the smallest smoke renderer and fixture compilation command.
+- [x] Run unit tests, validator, and both XeLaTeX fixture compilations; commit the verifier.
 
 ### Task 5: Synchronize public documentation and examples
 
@@ -97,6 +97,6 @@
 **Interfaces:**
 - Public documentation names XeLaTeX only, explains marker compatibility, and does not advertise the old token count.
 
-- [ ] Update public instructions and the original plan's completion status.
-- [ ] Search for `pdflatex`, `11 token`, `LANGUAGE_SCORE`, and `<<VAR>>`; retain none except historical prose explicitly labelled obsolete.
-- [ ] Run all release gates and commit the documentation pass.
+- [x] Update public instructions and the original plan's completion status.
+- [x] Search for `pdflatex`, `11 token`, `LANGUAGE_SCORE`, and `<<VAR>>`; retain none except historical prose explicitly labelled obsolete.
+- [x] Run all release gates and commit the documentation pass.

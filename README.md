@@ -51,11 +51,11 @@ Full rules: [`skills/resume-optimizer/references/cn-na-market.md`](skills/resume
 Export is **LaTeX-first**. The repo ships two built-in templates under [`templates/latex/`](templates/latex/):
 
 - `resume-cn.tex` — Chinese; compile with **xelatex** (needs `ctex`).
-- `resume-na.tex` — English / North-America-oriented; xelatex or pdflatex.
+- `resume-na.tex` — English / North-America-oriented; compile with **xelatex**.
 
-The skill substitutes the 11 identity/education `<<TOKEN>>`s (name, email, phone, GitHub username, language score, schools, GPAs, dates) and emits the project/work/skill body in the template's own macros (`\resumeProjectHeading{...}{...}{...}` + `\resumeItem{...}` + skill `\item`s), ready to paste over the fictional example block. The skill **does not compile** — it hands off the `.tex` for you to run `xelatex`.
+The skill substitutes four header `<<TOKEN>>`s (name, email, phone, GitHub username) and replaces the named `EDUCATION`, `EXPERIENCE`, and `SKILLS` template regions with schema-derived macros (`\resumeEduSubheading{...}{...}{...}`, `\resumeProjectHeading{...}{...}{...}`, `\resumeItem{...}`). This preserves real degree, major, course, and conditional NA content without fictional defaults. The skill **does not compile** — it hands off the `.tex` for you to run `xelatex`.
 
-**Bring your own template:** drop your `.tex` into `templates/latex/` (or point Export at any path: *"export with template `<path>`"*). Your template must use the same `<<TOKEN>>` names above for auto-fill; Export will still emit the macro-formatted body for you to paste. See [`templates/latex/TEMPLATE_GUIDE.md`](templates/latex/TEMPLATE_GUIDE.md) for the full token table and the body-macro contract.
+**Bring your own template:** drop your `.tex` into `templates/latex/` (or point Export at any path: *"export with template `<path>`"*). Automatic replacement requires the four header tokens, all three named regions, and compatible built-in macros; otherwise Export emits copy-ready snippets for manual paste. See [`templates/latex/TEMPLATE_GUIDE.md`](templates/latex/TEMPLATE_GUIDE.md) for the contract.
 
 Alternatives: Markdown ([`templates/markdown/resume.md`](templates/markdown/resume.md)), HTML ([`templates/html/resume.html`](templates/html/resume.html)), JSON Resume ([`templates/json/resume.schema.json`](templates/json/resume.schema.json)).
 

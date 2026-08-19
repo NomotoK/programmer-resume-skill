@@ -1,6 +1,8 @@
 # Programmer Resume Skill Suite — Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking.
+>
+> **Historical completion note (2026-08-19):** all original tasks below were completed. The original 11-token LaTeX contract is superseded by [`2026-08-19-export-contract-v2.md`](2026-08-19-export-contract-v2.md).
 
 **Goal:** Expand the single `programmer-resume-optimizer` skill into a cross-platform (Claude Code + OpenAI Codex) plugin suite — 1 main skill (`resume-optimizer`, 5 modes) + 2 sub-skills (`resume-from-code`, `resume-mock-interview`) — covering polish / code→resume / review / mock-interview / CN↔NA localization / JD-matching, with LaTeX-first export.
 
@@ -77,7 +79,7 @@ Move the existing root skill + references into the plugin layout, renaming the 6
 - Consumes: existing root `SKILL.md`, `references/resume-rules.md`, `references/简历指南*.md`.
 - Produces: `skills/resume-optimizer/SKILL.md` whose internal link `references/resume-rules.md` still resolves (same relative dir).
 
-- [ ] **Step 1: Create the directory and move files with `git mv`**
+- [x] **Step 1: Create the directory and move files with `git mv`**
 
 ```bash
 mkdir -p skills/resume-optimizer/references
@@ -92,14 +94,14 @@ git mv "references/简历指南 6、项目亮点增加.md"     skills/resume-opt
 rmdir references 2>/dev/null || true
 ```
 
-- [ ] **Step 2: Verify the link inside SKILL.md still resolves**
+- [x] **Step 2: Verify the link inside SKILL.md still resolves**
 
 The migrated `SKILL.md` contains `Read [resume-rules.md](references/resume-rules.md)`. After the move it is at `skills/resume-optimizer/SKILL.md`, and `resume-rules.md` is at `skills/resume-optimizer/references/resume-rules.md` — the relative path is unchanged.
 
 Run: `test -f skills/resume-optimizer/references/resume-rules.md && grep -q "references/resume-rules.md" skills/resume-optimizer/SKILL.md && echo OK`
 Expected: `OK`
 
-- [ ] **Step 3: Verify structure + no stray files**
+- [x] **Step 3: Verify structure + no stray files**
 
 Run: `find skills -type f | sort`
 Expected:
@@ -117,7 +119,7 @@ skills/resume-optimizer/references/resume-rules.md
 Run: `ls SKILL.md references 2>&1 | head`
 Expected: both report `No such file or directory` (root skill + references gone).
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add -A
@@ -137,7 +139,7 @@ Both manifests are metadata only; Claude Code and Codex auto-discover `skills/`.
 **Interfaces:**
 - Produces: two valid JSON manifests with `name`, `description`. (Validator Task 3 checks these.)
 
-- [ ] **Step 1: Write `.claude-plugin/plugin.json`**
+- [x] **Step 1: Write `.claude-plugin/plugin.json`**
 
 ```json
 {
@@ -154,7 +156,7 @@ Both manifests are metadata only; Claude Code and Codex auto-discover `skills/`.
 }
 ```
 
-- [ ] **Step 2: Write `.codex-plugin/plugin.json`** (same metadata; Codex reads this to register the plugin and its `skills/`)
+- [x] **Step 2: Write `.codex-plugin/plugin.json`** (same metadata; Codex reads this to register the plugin and its `skills/`)
 
 ```json
 {
@@ -169,12 +171,12 @@ Both manifests are metadata only; Claude Code and Codex auto-discover `skills/`.
 }
 ```
 
-- [ ] **Step 3: Verify both parse as JSON and have name+description**
+- [x] **Step 3: Verify both parse as JSON and have name+description**
 
 Run: `python3 -c "import json; [json.load(open(f)) for f in ['.claude-plugin/plugin.json','.codex-plugin/plugin.json']]; print('OK')"`
 Expected: `OK`
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add .claude-plugin .codex-plugin
@@ -194,7 +196,7 @@ TDD: write pytest tests (with a fixture plugin tree) first, then the validator. 
 **Interfaces:**
 - Produces: `validate(root=None) -> list[str]` returning a list of error strings (empty = valid). `main()` calls `validate()` on the repo root and exits 1 if any errors. All later tasks run `python3 scripts/validate.py`.
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 `tests/test_validate.py`:
 
@@ -279,12 +281,12 @@ def test_undocumented_template_var_fails(tmp_path):
     assert any("<<SECRET>>" in e and "TEMPLATE_GUIDE" in e for e in errs)
 ```
 
-- [ ] **Step 2: Run tests to verify they fail (module not found)**
+- [x] **Step 2: Run tests to verify they fail (module not found)**
 
 Run: `python3 -m pytest tests/test_validate.py -q`
 Expected: FAIL — collection error / `ModuleNotFoundError: No module named 'scripts.validate'`.
 
-- [ ] **Step 3: Write `scripts/validate.py`**
+- [x] **Step 3: Write `scripts/validate.py`**
 
 ```python
 #!/usr/bin/env python3
@@ -416,17 +418,17 @@ if __name__ == "__main__":
     main()
 ```
 
-- [ ] **Step 4: Run tests to verify they pass**
+- [x] **Step 4: Run tests to verify they pass**
 
 Run: `python3 -m pytest tests/test_validate.py -q`
 Expected: `8 passed`
 
-- [ ] **Step 5: Run the validator on the real repo**
+- [x] **Step 5: Run the validator on the real repo**
 
 Run: `python3 scripts/validate.py`
 Expected: `OK: 1 skill(s), manifests valid, references resolve, template vars documented.`
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add scripts/validate.py tests/test_validate.py
@@ -447,7 +449,7 @@ Update the Codex interface declaration to describe the suite; add README skeleto
 **Interfaces:**
 - Produces: READMEs that document the 3 skills + install + examples pointer.
 
-- [ ] **Step 1: Rewrite `agents/openai.yaml`**
+- [x] **Step 1: Rewrite `agents/openai.yaml`**
 
 ```yaml
 interface:
@@ -456,7 +458,7 @@ interface:
   default_prompt: "Use the programmer-resume skills to optimize my developer résumé for a backend role with STAR bullets and quantified outcomes, then export a LaTeX CN version."
 ```
 
-- [ ] **Step 2: Write `README.md` (skeleton)**
+- [x] **Step 2: Write `README.md` (skeleton)**
 
 ```markdown
 # Programmer Resume Skill Suite
@@ -491,7 +493,7 @@ LaTeX-first (supply your own `.tex` template via `templates/latex/`), with Markd
 MIT
 ```
 
-- [ ] **Step 3: Write `README.zh-CN.md` (skeleton)**
+- [x] **Step 3: Write `README.zh-CN.md` (skeleton)**
 
 ```markdown
 # 程序员简历技能套件
@@ -526,12 +528,12 @@ LaTeX 优先（可在 `templates/latex/` 提供自己的 `.tex` 模板），另�
 MIT
 ```
 
-- [ ] **Step 4: Verify validator still green**
+- [x] **Step 4: Verify validator still green**
 
 Run: `python3 scripts/validate.py`
 Expected: `OK: 1 skill(s), …`
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add agents/openai.yaml README.md README.zh-CN.md
@@ -552,7 +554,7 @@ The shared intermediate representation that Export mode consumes. The identity/e
 **Interfaces:**
 - Produces: a JSON Schema whose `basics` + `education` fields populate the 11 `<<TOKEN>>`s, and whose `skills`/`work`/`projects`/`awards` arrays Export renders into the templates' macro syntax (Task 9).
 
-- [ ] **Step 1: Write the schema**
+- [x] **Step 1: Write the schema**
 
 ```json
 {
@@ -638,17 +640,17 @@ The shared intermediate representation that Export mode consumes. The identity/e
 }
 ```
 
-- [ ] **Step 2: Verify it parses as JSON Schema**
+- [x] **Step 2: Verify it parses as JSON Schema**
 
 Run: `python3 -c "import json; s=json.load(open('templates/json/resume.schema.json')); assert s['properties']['basics']['description'].startswith('Populates'); print('OK')"`
 Expected: `OK`
 
-- [ ] **Step 3: Verify validator still green**
+- [x] **Step 3: Verify validator still green**
 
 Run: `python3 scripts/validate.py`
 Expected: `OK: 1 skill(s), …`
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add templates/json/resume.schema.json
@@ -668,7 +670,7 @@ The core instruction file. Platform-neutral. Defines how the agent routes intent
 - Consumes: `templates/json/resume.schema.json` (the intermediate representation), the canonical `<<VAR>>` set.
 - Produces: SKILL.md describing Polish / Review / JD-Match / Localize / Export modes and referencing `references/{resume-rules,cn-na-market,jd-matching,export-formats}.md` (these are created in Tasks 7–10; the validator resolves only the links present — so include only links to files that exist by the time this task runs. **Order note:** Tasks 7–10 must run before this task's reference links resolve, OR this task lists only `resume-rules.md` now and later tasks append their links. Simplest correct approach: this task writes SKILL.md referencing `resume-rules.md` only (exists since Task 1); Tasks 7–10 each append their own reference link. Follow the per-step instruction below.)
 
-- [ ] **Step 1: Write the 5-mode SKILL.md (reference `resume-rules.md` only; other refs added in Tasks 7–10)**
+- [x] **Step 1: Write the 5-mode SKILL.md (reference `resume-rules.md` only; other refs added in Tasks 7–10)**
 
 Write the full file `skills/resume-optimizer/SKILL.md`:
 
@@ -728,17 +730,17 @@ Prioritize project evidence, technical clarity, measurable impact, and authentic
 > The links to `jd-matching.md`, `cn-na-market.md`, `export-formats.md` are written now but those files do not exist until Tasks 7–9. **Do not run the validator until Step 3** — and in Step 2 you create the first of those files so links begin resolving. To keep gates clean, this task is sequenced AFTER Tasks 7–9 in execution (see Phase B order in File Map). If executing strictly in Task-number order, run Steps 2–9 of Tasks 7, 8, 9 first, then return here to Step 3.
 
 **Re-sequencing note (IMPORTANT):** Execute Task 6 content authoring first (this Step 1), but defer its validator + commit (Steps 2–4) until Tasks 7, 8, 9 land their reference files. Concretely:
-- [ ] 6.1 Write SKILL.md (above).
-- [ ] Do Tasks 7, 8, 9 (they create `cn-na-market.md`, `jd-matching.md`, `export-formats.md`).
-- [ ] 6.2 Run `python3 scripts/validate.py` → expect `OK: 1 skill(s), …` (all three links now resolve).
-- [ ] 6.3 `git add skills/resume-optimizer/SKILL.md && git commit -m "feat: resume-optimizer main skill — 5 modes (polish/review/jd-match/localize/export)"`.
+- [x] 6.1 Write SKILL.md (above).
+- [x] Do Tasks 7, 8, 9 (they create `cn-na-market.md`, `jd-matching.md`, `export-formats.md`).
+- [x] 6.2 Run `python3 scripts/validate.py` → expect `OK: 1 skill(s), …` (all three links now resolve).
+- [x] 6.3 `git add skills/resume-optimizer/SKILL.md && git commit -m "feat: resume-optimizer main skill — 5 modes (polish/review/jd-match/localize/export)"`.
 
-- [ ] **Step 2: (after Tasks 7–9) Verify all reference links resolve**
+- [x] **Step 2: (after Tasks 7–9) Verify all reference links resolve**
 
 Run: `python3 scripts/validate.py`
 Expected: `OK: 1 skill(s), manifests valid, references resolve, template vars documented.`
 
-- [ ] **Step 3: (after Tasks 7–9) Commit**
+- [x] **Step 3: (after Tasks 7–9) Commit**
 
 ```bash
 git add skills/resume-optimizer/SKILL.md
@@ -779,19 +781,19 @@ Distill `docs/research/2026-07-02-cn-resume-norms.md`, `…-na-resume-norms.md`,
 - Cites at least the key sources (Tech Interview Handbook, JavaGuide, EEOC/Cornell LII, CHRC/OHRC, Canada Job Bank).
 - ≤ ~450 lines.
 
-- [ ] **Step 1: Write the file** (per outline; read the 3 research docs and distill).
+- [x] **Step 1: Write the file** (per outline; read the 3 research docs and distill).
 
-- [ ] **Step 2: Content checklist**
+- [x] **Step 2: Content checklist**
 
 Run: `for s in "X-Y-Z" "Responsible for" "精通" "Title VII" "单栏" "985/211" "CET" "BOSS直聘" "FirstLast_Resume"; do grep -q "$s" skills/resume-optimizer/references/cn-na-market.md && echo "found: $s" || echo "MISSING: $s"; done`
 Expected: every line `found: …`.
 
-- [ ] **Step 3: Verify validator green (resume-optimizer SKILL.md link to cn-na-market.md now resolves)**
+- [x] **Step 3: Verify validator green (resume-optimizer SKILL.md link to cn-na-market.md now resolves)**
 
 Run: `python3 scripts/validate.py`
 Expected: `OK` — but note `jd-matching.md` and `export-formats.md` links in SKILL.md (Task 6) still pending until Tasks 8–9. If executing Task 6 authoring before 8–9, validator will report those two as missing — that is expected; proceed to Tasks 8–9, then re-run (Task 6 Step 2).
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add skills/resume-optimizer/references/cn-na-market.md
@@ -819,16 +821,16 @@ git commit -m "feat(resume-optimizer): cn-na-market.md — CN<->NA resume transf
 
 **Acceptance:** all role biases present with concrete metric/foreground guidance; JD-parse method reproducible.
 
-- [ ] **Step 1: Write the file** (per outline).
+- [x] **Step 1: Write the file** (per outline).
 
-- [ ] **Step 2: Content checklist**
+- [x] **Step 2: Content checklist**
 
 Run: `for s in "后端" "AI Agent" "算法" "QPS" "RAG" "AUC" "任职要求" "了解"; do grep -q "$s" skills/resume-optimizer/references/jd-matching.md && echo "found: $s" || echo "MISSING: $s"; done`
 Expected: every line `found: …`.
 
-- [ ] **Step 3: Verify validator** — `python3 scripts/validate.py` (jd-matching.md link now resolves; export-formats.md may still be pending if Task 9 not done — expected).
+- [x] **Step 3: Verify validator** — `python3 scripts/validate.py` (jd-matching.md link now resolves; export-formats.md may still be pending if Task 9 not done — expected).
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add skills/resume-optimizer/references/jd-matching.md
@@ -859,9 +861,9 @@ git commit -m "feat(resume-optimizer): jd-matching.md — JD parsing + role-bias
 
 **Acceptance:** token map lists all 11 tokens; macro-rendering rules show the exact `\resumeProjectHeading`/`\resumeItem` syntax; per-format rules complete.
 
-- [ ] **Step 1: Write the file** (per outline).
+- [x] **Step 1: Write the file** (per outline).
 
-- [ ] **Step 2: Token-map completeness check**
+- [x] **Step 2: Token-map completeness check**
 
 Run: `python3 - <<'PY'
 import re
@@ -871,16 +873,16 @@ print("OK" if canonical<=g else f"MISSING {canonical-g}")
 PY`
 Expected: `OK`
 
-- [ ] **Step 3: Verify validator** — `python3 scripts/validate.py` → `OK: 1 skill(s), …` (all SKILL.md links now resolve).
+- [x] **Step 3: Verify validator** — `python3 scripts/validate.py` → `OK: 1 skill(s), …` (all SKILL.md links now resolve).
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add skills/resume-optimizer/references/export-formats.md
 git commit -m "feat(resume-optimizer): export-formats.md — token map + macro-rendering rules"
 ```
 
-- [ ] **Step 5: Complete Task 6's deferred gate** — `python3 scripts/validate.py` (expect `OK`); commit SKILL.md if not already committed in Task 6.3.
+- [x] **Step 5: Complete Task 6's deferred gate** — `python3 scripts/validate.py` (expect `OK`); commit SKILL.md if not already committed in Task 6.3.
 
 ---
 
@@ -900,9 +902,9 @@ Augment the migrated core ruleset so each existing section cross-links to the ne
 
 **Acceptance:** the 3 in-skill links resolve; no `../` reference introduced; substance unchanged.
 
-- [ ] **Step 1: Apply the edits** (the 4 inline hooks + top "Market-aware mode" section; plain-text mention of mock-interview, no path).
+- [x] **Step 1: Apply the edits** (the 4 inline hooks + top "Market-aware mode" section; plain-text mention of mock-interview, no path).
 
-- [ ] **Step 2: Verify no `../` introduced and links resolve**
+- [x] **Step 2: Verify no `../` introduced and links resolve**
 
 Run: `grep -c "\.\./" skills/resume-optimizer/references/resume-rules.md`
 Expected: `0`
@@ -910,7 +912,7 @@ Expected: `0`
 Run: `python3 scripts/validate.py`
 Expected: `OK: 1 skill(s), …`
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add skills/resume-optimizer/references/resume-rules.md
@@ -935,7 +937,7 @@ Move the user-supplied LaTeX templates into `templates/latex/` (verbatim) and wr
 - Consumes: the user's two `.tex` files (their 11-token vocabulary); `templates/json/resume.schema.json`.
 - Produces: templates whose tokens are exactly the documented set (validator enforces: every `<<TOKEN>>` in a `.tex` appears in TEMPLATE_GUIDE).
 
-- [ ] **Step 1: Move the templates with `git mv`**
+- [x] **Step 1: Move the templates with `git mv`**
 
 ```bash
 mkdir -p templates/latex templates/html templates/markdown
@@ -944,7 +946,7 @@ git mv docs/latex_template/resume_en_template.tex templates/latex/resume-na.tex
 rmdir docs/latex_template 2>/dev/null || true
 ```
 
-- [ ] **Step 2: Write `templates/latex/TEMPLATE_GUIDE.md`**
+- [x] **Step 2: Write `templates/latex/TEMPLATE_GUIDE.md`**
 
 ```markdown
 # LaTeX Template Guide
@@ -983,7 +985,7 @@ The templates ship with a **fictional example** project block (clearly marked). 
 Ask Export to use a custom file: *"export with template `<path>`"*. Your template must use the same `<<TOKEN>>` names above for auto-fill; Export will still emit the macro-formatted body for you to paste. Leave `<<CONFIRM: …>>` markers for any value Export cannot verify — fill those yourself.
 ```
 
-- [ ] **Step 3: Write `templates/markdown/resume.md`**
+- [x] **Step 3: Write `templates/markdown/resume.md`**
 
 ```markdown
 # <<NAME>>
@@ -1000,7 +1002,7 @@ Ask Export to use a custom file: *"export with template `<path>`"*. Your templat
 <!-- Paste skill lines here; English proficiency: <<LANGUAGE_SCORE>> -->
 ```
 
-- [ ] **Step 4: Write `templates/html/resume.html`**
+- [x] **Step 4: Write `templates/html/resume.html`**
 
 ```html
 <!doctype html>
@@ -1027,19 +1029,19 @@ Ask Export to use a custom file: *"export with template `<path>`"*. Your templat
 </body></html>
 ```
 
-- [ ] **Step 5: Verify token consistency (validator check 5)**
+- [x] **Step 5: Verify token consistency (validator check 5)**
 
 Run: `python3 scripts/validate.py`
 Expected: `OK: 1 skill(s), manifests valid, references resolve, template vars documented.`
 
 If it fails: a `<<TOKEN>>` in `resume-cn.tex` or `resume-na.tex` is not listed in TEMPLATE_GUIDE — add it to the table (the templates use exactly the 11 tokens above, so this should pass).
 
-- [ ] **Step 6: Spot-check both templates still contain their tokens**
+- [x] **Step 6: Spot-check both templates still contain their tokens**
 
 Run: `grep -c "<<NAME>>" templates/latex/resume-cn.tex templates/latex/resume-na.tex`
 Expected: `1` `1`.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add templates/latex templates/html templates/markdown docs/latex_template
@@ -1060,7 +1062,7 @@ git commit -m "feat: adopt user LaTeX templates + TEMPLATE_GUIDE + HTML/Markdown
 - Consumes: a repo path or GitHub URL; the user's git identity (author name/email).
 - Produces: 1 resume project section (STAR + quantified, per resume-rules conventions) + a highlights-evidence list mapping each highlight to commit/file. Self-contained (no `../` refs; carries its own copy of the STAR formula + 14 dimensions summary).
 
-- [ ] **Step 1: Write `skills/resume-from-code/SKILL.md`**
+- [x] **Step 1: Write `skills/resume-from-code/SKILL.md`**
 
 ````markdown
 ---
@@ -1098,7 +1100,7 @@ Read a project repository + the user's own contribution history; surface real te
 - Keep it self-contained: do not reference files outside this skill.
 ````
 
-- [ ] **Step 2: Write `skills/resume-from-code/references/code-mining.md`**
+- [x] **Step 2: Write `skills/resume-from-code/references/code-mining.md`**
 
 **Content outline:**
 - **Where highlights live:** commit messages, diff hunks (new abstractions, perf-critical paths), config/CI, test files, package manifests, README claims, comments/TODOs resolved.
@@ -1118,7 +1120,7 @@ Read a project repository + the user's own contribution history; surface real te
 
 **Acceptance:** all 14 dimensions mapped to concrete code signals; git recipes present; no `../`.
 
-- [ ] **Step 3: Verify self-containment + structure**
+- [x] **Step 3: Verify self-containment + structure**
 
 Run: `grep -c "\.\./" skills/resume-from-code/SKILL.md skills/resume-from-code/references/code-mining.md`
 Expected: `0` `0`
@@ -1126,7 +1128,7 @@ Expected: `0` `0`
 Run: `python3 scripts/validate.py`
 Expected: `OK: 2 skill(s), …`
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add skills/resume-from-code
@@ -1145,7 +1147,7 @@ git commit -m "feat: resume-from-code sub-skill (code -> resume project section)
 - Consumes: a resume (project sections especially).
 - Produces: per project, dozens of layered questions each with talking points + likely follow-ups; covers the 6-question defense checklist.
 
-- [ ] **Step 1: Write `skills/resume-mock-interview/SKILL.md`**
+- [x] **Step 1: Write `skills/resume-mock-interview/SKILL.md`**
 
 ````markdown
 ---
@@ -1181,7 +1183,7 @@ Turn each resume project into a drillable question bank.
 - Questions must be answerable from the candidate's real experience; do not invent resume content. Keep self-contained (no refs outside this skill).
 ````
 
-- [ ] **Step 2: Write `skills/resume-mock-interview/references/interview-bank.md`**
+- [x] **Step 2: Write `skills/resume-mock-interview/references/interview-bank.md`**
 
 **Content outline:**
 - **5-layer framework** (L1–L5) with 2–3 example questions per layer per common project type (CRUD/business system, infra/middleware, AI-agent app, algorithm).
@@ -1191,7 +1193,7 @@ Turn each resume project into a drillable question bank.
 
 **Acceptance:** 5 layers + 6-question set present; ≥4 tech-area follow-up banks; no `../`.
 
-- [ ] **Step 3: Verify self-containment + structure**
+- [x] **Step 3: Verify self-containment + structure**
 
 Run: `grep -c "\.\./" skills/resume-mock-interview/SKILL.md skills/resume-mock-interview/references/interview-bank.md`
 Expected: `0` `0`
@@ -1199,7 +1201,7 @@ Expected: `0` `0`
 Run: `python3 scripts/validate.py`
 Expected: `OK: 3 skill(s), …`
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add skills/resume-mock-interview
@@ -1223,22 +1225,22 @@ git commit -m "feat: resume-mock-interview sub-skill (resume -> question bank)"
 
 **Interfaces:** consumes nothing; demonstrates each capability.
 
-- [ ] **Step 1: Write `examples/sample-resume-input.md`** — a fully fabricated (clearly marked "虚构示例 / fictional") new-grad backend resume with weak bullets (so polish/review examples show real improvement). Include name "张三 / Zhang San", a project with vague bullets ("使用 Redis 优化性能"), CET-6, a 985 school.
+- [x] **Step 1: Write `examples/sample-resume-input.md`** — a fully fabricated (clearly marked "虚构示例 / fictional") new-grad backend resume with weak bullets (so polish/review examples show real improvement). Include name "张三 / Zhang San", a project with vague bullets ("使用 Redis 优化性能"), CET-6, a 985 school.
 
-- [ ] **Step 2: Write each output example** showing the capability applied to the sample:
+- [x] **Step 2: Write each output example** showing the capability applied to the sample:
   - `output-polish.md`: the same project rewritten STAR + quantified (with one `<<CONFIRM>>` marker).
   - `output-review.md`: 🔴/🟡/🟢 tiered critique of the input.
   - `output-jd-match.md`: a short backend JD + the re-emphasized resume (backend bias).
   - `output-localize-na.md`: the CN→NA reshape (photo/age/CET removed, X-Y-Z bullets, 1 page note).
   - `output-mock-interview.md`: one project → ~12 layered questions with talking points + follow-ups + 1 defensibility flag.
-- [ ] **Step 3: Write `examples/README.md`** explaining each file is fictional and for illustration.
+- [x] **Step 3: Write `examples/README.md`** explaining each file is fictional and for illustration.
 
-- [ ] **Step 4: Verify validator green + examples present**
+- [x] **Step 4: Verify validator green + examples present**
 
 Run: `ls examples/*.md | wc -l` → expect `7`.
 Run: `python3 scripts/validate.py` → `OK`.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add examples
@@ -1252,24 +1254,24 @@ git commit -m "docs: add sanitized fictional examples for each capability"
 **Files:**
 - Modify: `README.md`, `README.zh-CN.md`
 
-- [ ] **Step 1: Expand both READMEs** from the skeletons (Task 4) to include: capabilities matrix (6 capabilities → 3 skills), the CN↔NA note ("reshapes, doesn't translate"), template section (how to supply your own `.tex`), privacy note (skill runs locally; never auto-submits), link to `examples/` and `docs/superpowers/specs/`. Keep EN in README.md, ZH in README.zh-CN.md.
+- [x] **Step 1: Expand both READMEs** from the skeletons (Task 4) to include: capabilities matrix (6 capabilities → 3 skills), the CN↔NA note ("reshapes, doesn't translate"), template section (how to supply your own `.tex`), privacy note (skill runs locally; never auto-submits), link to `examples/` and `docs/superpowers/specs/`. Keep EN in README.md, ZH in README.zh-CN.md.
 
-- [ ] **Step 2: Final repo structure check**
+- [x] **Step 2: Final repo structure check**
 
 Run: `find skills .claude-plugin .codex-plugin templates agents examples -type f | sort`
 Expected: 3 SKILL.md + their references, 2 manifests, agents/openai.yaml, 5 template files (incl. schema), 7 example files.
 
-- [ ] **Step 3: Full green gate**
+- [x] **Step 3: Full green gate**
 
 Run: `python3 scripts/validate.py` → `OK: 3 skill(s), manifests valid, references resolve, template vars documented.`
 Run: `python3 -m pytest tests/ -q` → all pass.
 
-- [ ] **Step 4: Cross-platform sanity (manual, documented in README)** — Confirm both manifests are valid JSON pointing at the same `skills/`; confirm no SKILL.md hard-codes a host-specific tool name (grep for common offenders).
+- [x] **Step 4: Cross-platform sanity (manual, documented in README)** — Confirm both manifests are valid JSON pointing at the same `skills/`; confirm no SKILL.md hard-codes a host-specific tool name (grep for common offenders).
 
 Run: `grep -rniE "Read tool|WebFetch|web_fetch" skills || echo "no host-specific tool names hardcoded"`
 Expected: `no host-specific tool names hardcoded`.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add README.md README.zh-CN.md

@@ -51,11 +51,11 @@
 导出以 **LaTeX 为首选**。仓库在 [`templates/latex/`](templates/latex/) 下内置两个模板：
 
 - `resume-cn.tex` —— 中文；用 **xelatex** 编译（需要 `ctex`）。
-- `resume-na.tex` —— 英文 / 北美导向；xelatex 或 pdflatex。
+- `resume-na.tex` —— 英文 / 北美导向；使用 **xelatex** 编译。
 
-skill 会替换 11 个身份/教育类 `<<TOKEN>>`（姓名、邮箱、电话、GitHub 用户名、语言成绩、学校、GPA、日期），并按模板自带的宏（`\resumeProjectHeading{...}{...}{...}` + `\resumeItem{...}` + 技能 `\item`s）生成项目/工作/技能正文，供你直接粘贴覆盖虚构示例块。skill **不负责编译** —— 它把 `.tex` 交给你运行 `xelatex`。
+skill 会替换 4 个头部 `<<TOKEN>>`（姓名、邮箱、电话、GitHub 用户名），并将 schema 数据生成到 `EDUCATION`、`EXPERIENCE`、`SKILLS` 三个具名区块中（`\resumeEduSubheading{...}{...}{...}`、`\resumeProjectHeading{...}{...}{...}`、`\resumeItem{...}`）。这样可保留真实的学位、专业、课程以及北美版的条件内容，不会继承虚构默认值。skill **不负责编译** —— 它把 `.tex` 交给你运行 `xelatex`。
 
-**使用你自己的模板：** 把 `.tex` 放进 `templates/latex/`（或给 Export 指定任意路径：*"export with template `<path>`"*）。你的模板必须使用上述同名 `<<TOKEN>>` 才能被自动填充；Export 仍会按宏格式生成正文供你粘贴。完整 token 表与正文宏约定见 [`templates/latex/TEMPLATE_GUIDE.md`](templates/latex/TEMPLATE_GUIDE.md)。
+**使用你自己的模板：** 把 `.tex` 放进 `templates/latex/`（或给 Export 指定任意路径：*"export with template `<path>`"*）。自动替换要求模板同时具备 4 个头部 token、3 个具名区块与兼容的内置宏；否则 Export 只生成可复制粘贴的片段。完整契约见 [`templates/latex/TEMPLATE_GUIDE.md`](templates/latex/TEMPLATE_GUIDE.md)。
 
 备选格式：Markdown（[`templates/markdown/resume.md`](templates/markdown/resume.md)）、HTML（[`templates/html/resume.html`](templates/html/resume.html)）、JSON Resume（[`templates/json/resume.schema.json`](templates/json/resume.schema.json)）。
 

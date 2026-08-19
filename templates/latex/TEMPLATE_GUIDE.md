@@ -1,35 +1,27 @@
-# LaTeX Template Guide
+# LaTeX Template Guide — Export Contract v2
 
-The built-in templates are `resume-cn.tex` (Chinese, compile with **xelatex** — needs `ctex`) and `resume-na.tex` (English / North-America-oriented, xelatex or pdflatex). They share layout, macros, and section order.
-
-## Identity / education tokens (auto-filled)
-
-Export substitutes these `<<TOKEN>>` placeholders directly:
+The built-in `resume-cn.tex` and `resume-na.tex` templates compile with **XeLaTeX only**. Both contain four auto-filled header tokens:
 
 | Token | Schema field |
 |---|---|
-| `<<NAME>>` | basics.name |
-| `<<EMAIL>>` | basics.email |
-| `<<PHONE>>` | basics.phone |
-| `<<GITHUB_USERNAME>>` | basics.githubUsername |
-| `<<LANGUAGE_SCORE>>` | basics.languageScore |
-| `<<SCHOOL_MASTER>>` | education[level=master].institution |
-| `<<GPA_MASTER>>` | education[level=master].score |
-| `<<DATE_MASTER>>` | education[level=master].date |
-| `<<SCHOOL_BACHELOR>>` | education[level=bachelor].institution |
-| `<<GPA_BACHELOR>>` | education[level=bachelor].score |
-| `<<DATE_BACHELOR>>` | education[level=bachelor].date |
-| `<<VAR>>` | Generic placeholder referenced in the templates' usage comments — stands for "any value the user is filling in by hand". Not auto-substituted by Export; left as a documentation marker. |
+| `<<NAME>>` | `basics.name` |
+| `<<EMAIL>>` | `basics.email` |
+| `<<PHONE>>` | `basics.phone` |
+| `<<GITHUB_USERNAME>>` | `basics.githubUsername` |
 
-## Project / experience / skills body (generated for paste)
+All other resume content is generated from the schema into these paired comment regions, exactly once per template:
 
-The templates ship with a **fictional example** project block (clearly marked). Export does NOT auto-replace it; instead it generates a ready-to-paste block in the templates' own macros for you to swap in:
+```tex
+% RESUME-SKILL:BEGIN EDUCATION
+% RESUME-SKILL:END EDUCATION
+% RESUME-SKILL:BEGIN EXPERIENCE
+% RESUME-SKILL:END EXPERIENCE
+% RESUME-SKILL:BEGIN SKILLS
+% RESUME-SKILL:END SKILLS
+```
 
-- Project/work entry:
-  `\resumeProjectHeading{<name>}{<tech stack, joined by " / ">}{<date>}`
-  followed by one `\resumeItem{...}` per bullet (already in CN-STAR or NA-X-Y-Z style from the prior mode).
-- Skill group: one `\item \small ...` line per the template's skill style.
+Education is generated from every `education[]` entry, so a bachelor-only, master, PhD, or non-CS resume never inherits fictional degree or course text. NA skills never render a CET or language-score line.
 
-## Providing your own template
+## Custom templates
 
-Ask Export to use a custom file: *"export with template `<path>`"*. Your template must use the same `<<TOKEN>>` names above for auto-fill; Export will still emit the macro-formatted body for you to paste. Leave `<<CONFIRM: …>>` markers for any value Export cannot verify — fill those yourself.
+Automatic replacement requires all three region pairs and the built-in macro interface: `\resumeEduSubheading`, `\resumeEduLine`, `\resumeProjectHeading`, and `\resumeItem`. A custom template without them receives copy-ready snippets only; do not promise automatic replacement.

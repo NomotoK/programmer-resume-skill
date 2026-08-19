@@ -3,6 +3,8 @@
 > 日期：2026-07-02
 > 状态：已通过用户评审（架构 + 5 节设计）
 > 前身：基于 [liyupi/coder-resume-guide](https://github.com/liyupi/coder-resume-guide) 制作的单个 `programmer-resume-optimizer` skill
+>
+> **历史说明（2026-08-19）：** 套件架构与六项能力仍有效；原有 LaTeX token/export 描述已由 [Export Contract v2](2026-08-19-export-contract-v2-design.md) 取代。v2 使用四个头部 token 与三个具名内容区块。
 
 ## 1. 背景与目标
 

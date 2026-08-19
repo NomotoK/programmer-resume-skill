@@ -13,6 +13,16 @@ FRONTMATTER_RE = re.compile(r"^---\n(.*?)\n---\n", re.DOTALL)
 REF_LINK_RE = re.compile(r"references/[\w./\-]+\.md")
 PLACEHOLDER_RE = re.compile(r"<<([A-Z_]+)>>")
 KV_RE = re.compile(r"^(\w+):\s*(.*)$")
+HEADER_TOKENS = {"NAME", "EMAIL", "PHONE", "GITHUB_USERNAME"}
+REGION_NAMES = ("EDUCATION", "EXPERIENCE", "SKILLS")
+REQUIRED_EXPORT_ASSETS = (
+    "templates/latex/TEMPLATE_GUIDE.md",
+    "templates/latex/resume-cn.tex",
+    "templates/latex/resume-na.tex",
+    "templates/html/resume.html",
+    "templates/markdown/resume.md",
+    "templates/json/resume.schema.json",
+)
 
 
 def _parse_frontmatter(text):
@@ -96,7 +106,11 @@ def validate(root: Path = DEFAULT_ROOT):
         if not data.get("description"):
             err(f"{rel}: missing 'description'")
 
-    # 5. Template placeholder tokens documented in TEMPLATE_GUIDE
+    # 5. Export template contract
+    for rel in REQUIRED_EXPORT_ASSETS:
+        if not (root / rel).is_file():
+            err(f"missing required export asset {rel}")
+
     guide = root / "templates/latex/TEMPLATE_GUIDE.md"
     if guide.is_file():
         declared = set(PLACEHOLDER_RE.findall(guide.read_text(encoding="utf-8")))
@@ -105,9 +119,27 @@ def validate(root: Path = DEFAULT_ROOT):
             tex = latex_dir / tex_name
             if not tex.is_file():
                 continue
-            used = set(PLACEHOLDER_RE.findall(tex.read_text(encoding="utf-8")))
+            text = tex.read_text(encoding="utf-8")
+            used = set(PLACEHOLDER_RE.findall(text))
             for v in sorted(used - declared):
                 err(f"{tex_name}: placeholder <<{v}>> not documented in TEMPLATE_GUIDE.md")
+            for v in sorted(used - HEADER_TOKENS):
+                err(f"{tex_name}: unsupported template token <<{v}>>")
+            for region in REGION_NAMES:
+                begin = text.count(f"% RESUME-SKILL:BEGIN {region}")
+                end = text.count(f"% RESUME-SKILL:END {region}")
+                if begin != 1 or end != 1:
+                    err(
+                        f"{tex_name}: template region {region} must have exactly one BEGIN and one END marker"
+                    )
+
+    html = root / "templates/html/resume.html"
+    if html.is_file():
+        text = html.read_text(encoding="utf-8").lower()
+        if not all(tag in text for tag in ("<header", "<main", "<section")):
+            err("HTML template missing semantic header/main/section contract")
+        if "@page" not in text:
+            err("HTML template missing @page print contract")
 
     return errors
 

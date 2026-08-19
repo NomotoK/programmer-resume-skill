@@ -41,7 +41,7 @@ Prioritize project evidence, technical clarity, measurable impact, and authentic
 
 ### Export (导出)
 - Render the structured representation into the requested format. See [export-formats.md](references/export-formats.md).
-- LaTeX-first: take `templates/latex/resume-{cn,na}.tex` (or a user-supplied `--template <path>`); substitute the 11 identity/education `<<TOKEN>>`s; then render projects/work/skills as ready-to-paste lines in the template's own macros (`\resumeProjectHeading{...}{...}{...}` + `\resumeItem{...}` + skill `\item`s) to replace the fictional example block. Hand off the `.tex` for the user to compile with `xelatex` (CN needs ctex) — this skill does not compile.
+- LaTeX-first: take `templates/latex/resume-{cn,na}.tex` (or a user-supplied `--template <path>`); substitute only `<<NAME>>`, `<<EMAIL>>`, `<<PHONE>>`, and `<<GITHUB_USERNAME>>`, then generate the `EDUCATION`, `EXPERIENCE`, and `SKILLS` marker regions in the template's own macros. Render all education entries from the structured representation; never retain fictional degrees, majors, or course lists. Built-in templates compile with `xelatex` only — this skill does not compile.
 - Alternatives: Markdown (`templates/markdown/resume.md`), HTML (`templates/html/resume.html`), JSON Resume (`templates/json/resume.schema.json`).
 
 ## Cross-mode rules (always apply)

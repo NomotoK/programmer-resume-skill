@@ -3,6 +3,17 @@ from pathlib import Path
 from scripts.validate import validate
 
 VALID_SKILL = "---\nname: demo\ndescription: Use when X to do Y.\n---\n# Demo\nSee [rules](references/rules.md).\n"
+VALID_TEMPLATE = """<<NAME>> <<EMAIL>> <<PHONE>> <<GITHUB_USERNAME>>
+% RESUME-SKILL:BEGIN EDUCATION
+% RESUME-SKILL:END EDUCATION
+% RESUME-SKILL:BEGIN EXPERIENCE
+% RESUME-SKILL:END EXPERIENCE
+% RESUME-SKILL:BEGIN SKILLS
+% RESUME-SKILL:END SKILLS
+"""
+VALID_HTML = """<style>@page { size: A4; margin: 0.5in; }</style>
+<header></header><main><section></section></main>
+"""
 
 class ValidateTests(unittest.TestCase):
     def _tree(self, root, files):
@@ -17,6 +28,12 @@ class ValidateTests(unittest.TestCase):
             ".codex-plugin/plugin.json": json.dumps({"name": "demo", "description": "d"}),
             "skills/demo/SKILL.md": VALID_SKILL,
             "skills/demo/references/rules.md": "# rules\n",
+            "templates/latex/TEMPLATE_GUIDE.md": "Tokens: <<NAME>> <<EMAIL>> <<PHONE>> <<GITHUB_USERNAME>>\n",
+            "templates/latex/resume-cn.tex": VALID_TEMPLATE,
+            "templates/latex/resume-na.tex": VALID_TEMPLATE,
+            "templates/html/resume.html": VALID_HTML,
+            "templates/markdown/resume.md": "# Resume\n",
+            "templates/json/resume.schema.json": "{}\n",
         }
 
     def _run(self, files):
@@ -58,6 +75,30 @@ class ValidateTests(unittest.TestCase):
         files["templates/latex/TEMPLATE_GUIDE.md"] = "Tokens: <<NAME>>"
         files["templates/latex/resume-na.tex"] = "<<NAME>> <<SECRET>>"
         self.assertTrue(any("<<SECRET>>" in e and "TEMPLATE_GUIDE" in e for e in self._run(files)))
+
+    def test_missing_built_in_template_fails(self):
+        files = self._base()
+        del files["templates/latex/resume-na.tex"]
+        self.assertTrue(any("resume-na.tex" in e and "missing" in e for e in self._run(files)))
+
+    def test_unpaired_export_region_fails(self):
+        files = self._base()
+        files["templates/latex/resume-cn.tex"] = VALID_TEMPLATE.replace(
+            "% RESUME-SKILL:END EDUCATION\n", ""
+        )
+        self.assertTrue(any("EDUCATION" in e and "region" in e for e in self._run(files)))
+
+    def test_legacy_language_token_fails(self):
+        files = self._base()
+        files["templates/latex/resume-na.tex"] = VALID_TEMPLATE.replace(
+            "<<GITHUB_USERNAME>>", "<<GITHUB_USERNAME>> <<LANGUAGE_SCORE>>"
+        )
+        self.assertTrue(any("LANGUAGE_SCORE" in e and "token" in e for e in self._run(files)))
+
+    def test_html_without_semantic_print_contract_fails(self):
+        files = self._base()
+        files["templates/html/resume.html"] = "<h1>Resume</h1>"
+        self.assertTrue(any("HTML" in e and "semantic" in e for e in self._run(files)))
 
 if __name__ == "__main__":
     unittest.main()

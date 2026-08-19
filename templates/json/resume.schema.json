@@ -1,19 +1,18 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://nomotok.github.io/programmer-resume-skill/resume.schema.json",
-  "title": "Tech Resume (JSON Resume-compatible)",
+  "$id": "https://nomotok.github.io/programmer-resume-skill/resume.schema.v2.json",
+  "title": "Tech Resume (Export Contract v2)",
   "type": "object",
   "required": ["basics"],
   "properties": {
     "basics": {
       "type": "object",
-      "description": "Populates <<NAME>>, <<EMAIL>>, <<PHONE>>, <<GITHUB_USERNAME>>, <<LANGUAGE_SCORE>>.",
+      "description": "Populates <<NAME>>, <<EMAIL>>, <<PHONE>>, and <<GITHUB_USERNAME>>.",
       "properties": {
         "name": {"type": "string"},
         "email": {"type": "string"},
         "phone": {"type": "string"},
         "githubUsername": {"type": "string"},
-        "languageScore": {"type": "string", "description": "e.g. CET-6 / TOEFL 105 / IELTS 7.5"},
         "targetMarket": {"type": "string", "enum": ["CN", "NA"]},
         "location": {"type": "string"},
         "wechat": {"type": "string"},
@@ -25,7 +24,7 @@
     },
     "education": {
       "type": "array",
-      "description": "First two entries populate <<SCHOOL_MASTER>>/<<GPA_MASTER>>/<<DATE_MASTER>> and <<SCHOOL_BACHELOR>>/<<GPA_BACHELOR>>/<<DATE_BACHELOR>>.",
+      "description": "Every entry renders into the EDUCATION region; ordering is preserved.",
       "items": {"type": "object", "properties": {
         "level": {"type": "string", "enum": ["master", "bachelor", "phd", "other"]},
         "institution": {"type": "string"},
@@ -34,8 +33,7 @@
         "area": {"type": "string"},
         "studyType": {"type": "string"},
         "rank": {"type": "string", "description": "CN only, e.g. 专业排名前10%"},
-        "courses": {"type": "array", "items": {"type": "string"}},
-        "cet": {"type": "string", "description": "CN only, e.g. CET-6"}
+        "courses": {"type": "array", "items": {"type": "string"}}
       }}
     },
     "skills": {

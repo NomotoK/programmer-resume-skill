@@ -1,198 +1,53 @@
-% =====================================================================
-% 程序员简历 LaTeX 模板（中文版）
-%
-% 用法：
-%   1. 全文搜索 <<  ，把所有 <<VAR>> 占位符替换为你的真实信息。
-%   2. 「项目与实习经历」整段为【虚构示例】，仅用于展示 STAR 句式与
-%      排版效果，请整体替换为你自己的真实项目经历。
-%   3. 编译命令：xelatex resume_cn_template.tex   （依赖 ctex 中文支持）
-%
-% 占位符清单：
-%   <<NAME>>  <<EMAIL>>  <<PHONE>>  <<GITHUB_USERNAME>>
-%   <<SCHOOL_MASTER>>   <<GPA_MASTER>>   <<DATE_MASTER>>
-%   <<SCHOOL_BACHELOR>> <<GPA_BACHELOR>> <<DATE_BACHELOR>>
-%   <<LANGUAGE_SCORE>>
-% =====================================================================
-\documentclass[a4paper,11pt]{article}
-
-% 页面边距
-\usepackage[left=1.0cm,right=1.0cm,top=0.5cm,bottom=0.5cm]{geometry}
-% 中文支持
-\usepackage{ctex}
-% 图标
-\usepackage{fontawesome5}
-% 列表控制
+% Programmer Resume — CN template. Compile with xelatex only.
+\documentclass[a4paper,10pt]{article}
+\usepackage[margin=0.55in]{geometry}
+\usepackage[fontset=fandol]{ctex}
 \usepackage{enumitem}
-% 标题格式
 \usepackage{titlesec}
-% 颜色
 \usepackage{xcolor}
-% 超链接
 \usepackage{hyperref}
-% 表格增强
 \usepackage{array}
-\usepackage{fontspec}
-\hypersetup{
-  colorlinks=true,
-  urlcolor=black
-}
-
-% 不显示页码
+\usepackage{fontawesome5}
+\hypersetup{colorlinks=true,urlcolor=black}
 \pagestyle{empty}
-
-% section 样式
 \titleformat{\section}{\large\bfseries\raggedright}{}{0em}{}[\titlerule]
 \titlespacing{\section}{0pt}{8pt}{4pt}
+\setlist[itemize]{topsep=2pt,itemsep=2pt,parsep=0pt,partopsep=0pt}
 
-% 全局列表间距（外层）
-\setlist[itemize]{
-  topsep=2pt,
-  itemsep=2pt,
-  parsep=0pt,
-  partopsep=0pt
-}
-
-%------------------------------------------------
-% 自定义命令
-%------------------------------------------------
-
-% 教育专用：第一行右侧放地点+时间；第二行右侧留空
-\newcommand{\resumeEduSubheading}[3]{
-  \item
-  \begin{tabular*}{\linewidth}[t]{@{}l@{\extracolsep{\fill}}r@{}}
-    \textbf{#1} & \small #2 \\
-    \textit{\small #3} &
-  \end{tabular*}\vspace{1pt}
-}
-
-% 教育补充行：左对齐、自动换行（适配 itemize 内的行宽）
-\newcommand{\resumeEduLine}[1]{%
-  \noindent\parbox[t]{\linewidth}{\small #1}\par
-}
-
-% 项目标题（左：项目名 + 技术栈，右：时间）——收紧标题与描述间距
-\newcommand{\resumeProjectHeading}[3]{
-  \item
-  \begin{tabular*}{\linewidth}{@{}l@{\extracolsep{\fill}}r@{}}
-    \colorbox{gray!20}{\textbf{#1}} \quad \textit{\small #2} & \small #3
-  \end{tabular*}\vspace{0pt}
-}
-
+\newcommand{\resumeEduSubheading}[3]{%
+  \item\begin{tabular*}{\linewidth}[t]{@{}l@{\extracolsep{\fill}}r@{}}
+  \textbf{#1} & \small #2 \\ \textit{\small #3} &
+  \end{tabular*}\vspace{1pt}}
+\newcommand{\resumeEduLine}[1]{\noindent\parbox[t]{\linewidth}{\small #1}\par}
+\newcommand{\resumeProjectHeading}[3]{%
+  \item\begin{tabular*}{\linewidth}{@{}l@{\extracolsep{\fill}}r@{}}
+  \colorbox{gray!20}{\textbf{#1}} \quad \textit{\small #2} & \small #3
+  \end{tabular*}\vspace{0pt}}
 \newcommand{\resumeItem}[1]{\item \small{#1}}
 
-\newcommand{\invisible}[1]{%
-  {%
-    \special{pdf:literal direct 3 Tr}%
-    #1%
-    \special{pdf:literal direct 0 Tr}%
-  }%
-}
-
 \begin{document}
-
-%------------------------------------------------
-% 头部（替换下方四个占位符为你的信息）
-%------------------------------------------------
 \begin{center}
   {\LARGE \bfseries <<NAME>>} \\[6pt]
-  \small
-  \faEnvelope\ \href{mailto:<<EMAIL>>}{<<EMAIL>>} \quad
+  \small \faEnvelope\ \href{mailto:<<EMAIL>>}{<<EMAIL>>} \quad
   \faPhone\ <<PHONE>> \quad
   \faGithub\ \href{https://github.com/<<GITHUB_USERNAME>>}{github.com/<<GITHUB_USERNAME>>}
 \end{center}
 
-%------------------------------------------------
-% 教育背景（学校 / GPA / 时间为占位符；专业与课程为示例文本）
-%------------------------------------------------
-\section{\textcolor{blue!60!black}{教育背景}}
-
+\section{教育背景}
 \begin{itemize}[label={},leftmargin=0pt]
-
-\resumeEduSubheading
-{<<SCHOOL_MASTER>>   硕士}
-{\quad <<DATE_MASTER>>}
-{计算机科学 工学硕士 \quad GPA: <<GPA_MASTER>>/4.0}
-\resumeEduLine{\textbf{核心课程：}分布式系统、高性能计算、编译原理、数据结构与算法（C++）、软件工程}
-
-\vspace{3pt}
-
-\resumeEduSubheading
-{<<SCHOOL_BACHELOR>>  本科}
-{\quad <<DATE_BACHELOR>>}
-{计算机科学与技术 理学学士 \quad GPA: <<GPA_BACHELOR>>/4.0}
-\resumeEduLine{\textbf{核心课程：}操作系统、计算机网络、数据库、面向对象程序设计、机器学习、离散数学}
-
+% RESUME-SKILL:BEGIN EDUCATION
+% RESUME-SKILL:END EDUCATION
 \end{itemize}
 
-
-%------------------------------------------------
-% 项目与实习经历（下方为【虚构示例】，请整体替换为你自己的经历）
-%------------------------------------------------
-\section{\textcolor{blue!60!black}{项目与实习经历}}
-
+\section{项目与实习经历}
 \begin{itemize}[label={},leftmargin=0pt]
-
-\resumeProjectHeading
-{示例科技 后端研发实习生 - 企业级数据查询 MCP 服务}
-{Python / FastAPI / MCP / PostgreSQL}
-{2024.06 -- 2024.09}
-\begin{itemize}[label={$\bullet$},leftmargin=0.15in,topsep=0pt,itemsep=1pt]
-
-  \resumeItem{为打通大模型客户端与公司数据仓库的标准化接入，基于 \textbf{FastAPI + MCP SDK} 设计并实现 MCP 服务端，统一支持 \textbf{stdio 与流式 HTTP} 双传输模式，打通从 \textbf{tools/call} 到 \textbf{SQL 执行} 的完整调用链路。}
-
-  \resumeItem{构建 \textbf{模块化 Tools/Resources/Prompts 三层架构} 与统一工具路由，集成 \textbf{SQL 查询、元数据提取、执行计划分析、慢查询监控} 工具，提升服务可运维性与可扩展性。}
-
-  \resumeItem{为提升并发稳定性，基于 \textbf{asyncpg} 实现异步连接池与心跳探活，配合查询超时与连接自愈策略，将连接异常导致的在线请求失败率降至 \textbf{0.1\% 以下}。}
-
-  \resumeItem{基于 \textbf{JWT} 构建认证鉴权体系，在执行链路内置 \textbf{SQL 注入检测与危险关键字拦截}，并通过 \textbf{token 绑定数据源配置} 与热加载，支持无停机切换。}
-
-  \resumeItem{上线后 \textbf{连续运行 90 天，核心接口可用性 99.9\%}，日均工具调用 200+ 次；将查询需求由手工串行开发迁移为\textbf{分钟级 API 流水线}，典型交付周期缩短约 \textbf{70\%}。}
-
-\end{itemize}
-\resumeProjectHeading
-{AgentHub - Go 轻量级多渠道 AI Agent 框架}
-{Go / Eino / NATS / Docker}
-{2024.11}
-\begin{itemize}[label={$\bullet$},leftmargin=0.15in,topsep=0pt,itemsep=1pt]
-  \resumeItem{基于 \textbf{Eino 框架} 设计的 ReAct Agent 服务，搭建 \textbf{事件总线 → Agent 循环 → Tool/LLM} 事件驱动链路，实现\textbf{多渠道消息接入、路由与统一响应分发}（支持 Web / API / IM 等渠道接入）。}
-
-  \resumeItem{抽象\textbf{模块化服务组件（Gateway、Channel Manager、Agent Manager、调度器）}，支持配置化扩展渠道与工具，具备清晰的后端分层与可维护性设计。}
-
-  \resumeItem{实现统一工具执行框架（HTTP、数据库、Shell、检索），落地\textbf{参数校验、RBAC 权限控制与 Docker 沙箱隔离}，并集成危险命令检测、超时控制与输出截断等安全机制。}
-
-  \resumeItem{基于 \textbf{NATS} 实现事件持久化与会话恢复，完整记录消息与工具调用链路，保证上下文一致性与可追溯性。}
-
-  \resumeItem{在保持同等 Agent 能力的前提下进行减重重构，实现 \textbf{内存占用下降 85\%、镜像体积 <40MB、冷启动 <1.5s}，可稳定部署于低配边缘设备。}
+% RESUME-SKILL:BEGIN EXPERIENCE
+% RESUME-SKILL:END EXPERIENCE
 \end{itemize}
 
-\resumeProjectHeading
-{FeedFlow - Go 高并发内容流平台}
-{Go / Gin / MySQL / Redis / Kafka / Docker}
-{2025.01}
-\begin{itemize}[label={$\bullet$},leftmargin=0.15in,topsep=0pt,itemsep=1pt]
-  \resumeItem{参考开源项目进行模块化重构并提交 PR，通过引入消息队列与多级缓存，优化内容流接口在高并发场景下的读写性能瓶颈。}
-
-  \resumeItem{基于 \textbf{Redis} 设计 \textbf{本地 + 分布式多级缓存}，结合\textbf{互斥锁防击穿与写后主动失效}策略，将热点读的数据库 QPS 压力降低 \textbf{60\%}，列表接口 P95 延迟由 \textbf{280ms 优化至 110ms}。}
-
-  \resumeItem{针对点赞 / 评论写链路在突发流量下的同步阻塞问题，基于 \textbf{Kafka} 搭建事件驱动异步架构（API 发布事件、Worker 异步落库与计数聚合），将核心写接口平均响应时间降低 \textbf{50\%}，系统峰值吞吐提升约 \textbf{1.6 倍}。}
-
-  \resumeItem{为保障高可用与数据一致性，设计 \textbf{MQ 发布失败兜底直写、消费端幂等去重与缓存失效联动}机制，避免“请求成功但数据不落地”及重复消费导致的计数偏差问题。}
-
+\section{专业技能}
+\begin{itemize}[label={\(\bullet\)},leftmargin=0.15in]
+% RESUME-SKILL:BEGIN SKILLS
+% RESUME-SKILL:END SKILLS
 \end{itemize}
-
-\end{itemize}
-%------------------------------------------------
-% 专业技能（示例内容，可按需调整）
-%------------------------------------------------
-\section{\textcolor{blue!60!black}{专业技能}}
-
-\begin{itemize}[label={$\bullet$},leftmargin=0.15in]
-
-  \item \small 熟悉 \textbf{TCP/IP、HTTP} 等网络协议；熟悉 \textbf{并发编程模型（进程/线程、锁、同步机制）}。
-
-  \item \small 熟悉 \textbf{MySQL / PostgreSQL}；熟悉 \textbf{Redis} 的使用与数据结构，了解 \textbf{Kafka} 基本原理与应用场景，理解 LRU、分布式缓存等概念。熟练使用 \textbf{Git}，了解 CI/CD 流程，熟悉 \textbf{Docker} 与 Linux 环境。
-
-  \item \small 语言：英语（流利，\textbf{<<LANGUAGE_SCORE>>}）
-\end{itemize}
-
 \end{document}

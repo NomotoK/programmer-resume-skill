@@ -1,12 +1,18 @@
 # <<NAME>>
+
 <<EMAIL>> | <<PHONE>> | github.com/<<GITHUB_USERNAME>>
 
 ## Education
-- <<SCHOOL_MASTER>> — M.S., GPA <<GPA_MASTER>>/4.0 (<<DATE_MASTER>>)
-- <<SCHOOL_BACHELOR>> — B.S., GPA <<GPA_BACHELOR>>/4.0 (<<DATE_BACHELOR>>)
+
+<!-- RESUME-SKILL:BEGIN EDUCATION -->
+<!-- RESUME-SKILL:END EDUCATION -->
 
 ## Projects & Experience
-<!-- Paste STAR/X-Y-Z bullets here -->
+
+<!-- RESUME-SKILL:BEGIN EXPERIENCE -->
+<!-- RESUME-SKILL:END EXPERIENCE -->
 
 ## Skills
-<!-- Paste skill lines here; English proficiency: <<LANGUAGE_SCORE>> -->
+
+<!-- RESUME-SKILL:BEGIN SKILLS -->
+<!-- RESUME-SKILL:END SKILLS -->
