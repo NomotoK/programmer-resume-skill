@@ -52,6 +52,7 @@ def _load_json(path):
 
 def _validate_template_contract(path, begin_prefix, end_prefix, suffix, declared, err):
     text = path.read_text(encoding="utf-8")
+    regions = []
     used = set(PLACEHOLDER_RE.findall(text))
     for token in sorted(used - declared):
         err(f"{path.name}: placeholder <<{token}>> not documented in TEMPLATE_GUIDE.md")
@@ -64,8 +65,20 @@ def _validate_template_contract(path, begin_prefix, end_prefix, suffix, declared
         end_count = text.count(end_marker)
         if begin_count != 1 or end_count != 1:
             err(f"{path.name}: template region {region} must have exactly one BEGIN and one END marker")
-        elif text.index(begin_marker) > text.index(end_marker):
+            continue
+        begin_index = text.index(begin_marker)
+        end_index = text.index(end_marker)
+        if begin_index > end_index:
             err(f"{path.name}: template region {region} markers are in the wrong order")
+            continue
+        regions.append((begin_index, end_index, region))
+
+    previous = None
+    for begin_index, end_index, region in sorted(regions):
+        if previous is not None and begin_index < previous[1]:
+            err(f"{path.name}: template regions {previous[2]} and {region} overlap")
+        if previous is None or end_index > previous[1]:
+            previous = (begin_index, end_index, region)
 
 
 def validate(root: Path = DEFAULT_ROOT):

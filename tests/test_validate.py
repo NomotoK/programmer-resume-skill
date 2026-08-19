@@ -106,6 +106,14 @@ class ValidateTests(unittest.TestCase):
         )
         self.assertTrue(any("EDUCATION" in e and "order" in e for e in self._run(files)))
 
+    def test_overlapping_export_regions_fail(self):
+        files = self._base()
+        files["templates/latex/resume-cn.tex"] = VALID_TEMPLATE.replace(
+            "% RESUME-SKILL:END EDUCATION\n% RESUME-SKILL:BEGIN EXPERIENCE",
+            "% RESUME-SKILL:BEGIN EXPERIENCE\n% RESUME-SKILL:END EDUCATION",
+        )
+        self.assertTrue(any("overlap" in e for e in self._run(files)))
+
     def test_legacy_language_token_fails(self):
         files = self._base()
         files["templates/latex/resume-na.tex"] = VALID_TEMPLATE.replace(
