@@ -1,0 +1,4 @@
+interface:
+  display_name: "Programmer Resume Skill Suite"
+  short_description: "Polish, review, code-to-resume, mock-interview, CN<->NA localize, JD-match for dev résumés."
+  default_prompt: "Review my software-engineer résumé and prioritize the highest-impact fixes."

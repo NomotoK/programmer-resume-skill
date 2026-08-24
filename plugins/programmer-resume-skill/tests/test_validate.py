@@ -1,6 +1,6 @@
 import json, tempfile, unittest
 from pathlib import Path
-from scripts.validate import validate
+from scripts.validate import validate, validate_repository
 
 VALID_SKILL = "---\nname: demo\ndescription: Use when X to do Y.\n---\n# Demo\nSee [rules](references/rules.md).\n"
 VALID_TEMPLATE = """<<NAME>> <<EMAIL>> <<PHONE>> <<GITHUB_USERNAME>>
@@ -51,8 +51,51 @@ class ValidateTests(unittest.TestCase):
         self._tree(d, files)
         return validate(d)
 
+    def _run_repository(self, files):
+        d = Path(tempfile.mkdtemp())
+        plugin_root = d / "plugins" / "programmer-resume-skill"
+        self._tree(plugin_root, files)
+        self._tree(
+            d,
+            {
+                ".agents/plugins/marketplace.json": json.dumps(
+                    {
+                        "name": "programmer-resume",
+                        "interface": {"displayName": "Programmer Resume"},
+                        "plugins": [
+                            {
+                                "name": "programmer-resume-skill",
+                                "source": {"source": "local", "path": "./plugins/programmer-resume-skill"},
+                                "policy": {"installation": "AVAILABLE", "authentication": "ON_INSTALL"},
+                                "category": "Developer Tools",
+                            }
+                        ],
+                    }
+                ),
+                ".claude-plugin/marketplace.json": json.dumps(
+                    {
+                        "name": "programmer-resume",
+                        "plugins": [
+                            {"name": "programmer-resume-skill", "source": "./plugins/programmer-resume-skill"}
+                        ],
+                    }
+                ),
+            },
+        )
+        return validate_repository(d)
+
     def test_valid_tree_has_no_errors(self):
         self.assertEqual(self._run(self._base()), [])
+
+    def test_repository_marketplaces_target_the_plugin_package(self):
+        files = self._base()
+        files[".codex-plugin/plugin.json"] = json.dumps(
+            {"name": "programmer-resume-skill", "description": "d"}
+        )
+        files[".claude-plugin/plugin.json"] = json.dumps(
+            {"name": "programmer-resume-skill", "description": "d"}
+        )
+        self.assertEqual(self._run_repository(files), [])
 
     def test_missing_frontmatter_fails(self):
         files = self._base(); files["skills/demo/SKILL.md"] = "# Demo\nno frontmatter\n"

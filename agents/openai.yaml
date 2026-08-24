@@ -1,4 +1,0 @@
-interface:
-  display_name: "Programmer Resume Skill Suite"
-  short_description: "Polish, review, code-to-resume, mock-interview, CN<->NA localize, JD-match for dev résumés."
-  default_prompt: "Use the programmer-resume skills to optimize my developer résumé for a backend role with STAR bullets and quantified outcomes, then export a LaTeX CN version."

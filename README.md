@@ -19,11 +19,23 @@ Six capabilities, packed into three skills:
 
 ## Install
 
-**Claude Code:** `/plugin` → add this repo as a marketplace/plugin, or copy `skills/*` into your skills directory.
+**OpenAI Codex:** install the complete plugin package (skills, templates, scripts, examples, and research):
 
-**OpenAI Codex:** install as a plugin (`.codex-plugin/plugin.json`), or copy `skills/*` into `~/.codex/skills/`.
+```bash
+codex plugin marketplace add NomotoK/programmer-resume-skill --ref main
+codex plugin add programmer-resume-skill@programmer-resume
+```
 
-Both manifests (`.claude-plugin/plugin.json`, `.codex-plugin/plugin.json`) point at the same `skills/` tree — one source, two runtimes. No skill hard-codes host-specific tool names (verified by `grep -rniE "Read tool|WebFetch|web_fetch" skills`).
+To update, run `codex plugin marketplace upgrade programmer-resume`, then reinstall `programmer-resume-skill@programmer-resume` and start a new Codex thread.
+
+**Claude Code:** install the same packaged source through its marketplace:
+
+```bash
+claude plugin marketplace add NomotoK/programmer-resume-skill
+claude plugin install programmer-resume-skill@programmer-resume
+```
+
+**Skills-only fallback:** copy `plugins/programmer-resume-skill/skills/*` into `~/.codex/skills/`. This preserves each skill and its internal references, but it does **not** include the built-in templates, validation scripts, examples, or research material. Both marketplaces point to the same packaged source tree.
 
 ## Usage
 
@@ -44,20 +56,20 @@ Localization between the Chinese campus-recruiting format and the North-America 
 - **CN→NA:** hard-delete photo / age / gender / ID / 籍贯 / 政治面貌 / full address / 期望薪资; replace 微信 with LinkedIn; strip skill tiers (了解/熟悉/熟练掌握); rewrite 负责-style lines as `Led / Built / Designed` + X-Y-Z ("Accomplished X as measured by Y by doing Z"); enforce one page (new grad); drop CET; reorder education below experience.
 - **NA→CN:** restore 技术栈 lines + STAR; add 求职意向 + 毕业时间; re-add 了解/熟悉 tiers; optionally add 排名 / CET; reorder education by school prestige (985/211).
 
-Full rules: [`skills/resume-optimizer/references/cn-na-market.md`](skills/resume-optimizer/references/cn-na-market.md), sourced from [`docs/research/`](docs/research/).
+Full rules: [`cn-na-market.md`](plugins/programmer-resume-skill/skills/resume-optimizer/references/cn-na-market.md), sourced from the packaged [`docs/research/`](plugins/programmer-resume-skill/docs/research/).
 
 ## Templates & export
 
-Export is **LaTeX-first**. The repo ships two built-in templates under [`templates/latex/`](templates/latex/):
+Export is **LaTeX-first**. The plugin ships two built-in templates under [`templates/latex/`](plugins/programmer-resume-skill/templates/latex/):
 
 - `resume-cn.tex` — Chinese; compile with **xelatex** (needs `ctex`).
 - `resume-na.tex` — English / North-America-oriented; compile with **xelatex**.
 
 The skill substitutes four header `<<TOKEN>>`s (name, email, phone, GitHub username) and replaces the named `EDUCATION`, `EXPERIENCE`, and `SKILLS` template regions with schema-derived macros (`\resumeEduSubheading{...}{...}{...}`, `\resumeProjectHeading{...}{...}{...}`, `\resumeItem{...}`). This preserves real degree, major, course, and conditional NA content without fictional defaults. The skill **does not compile** — it hands off the `.tex` for you to run `xelatex`.
 
-**Bring your own template:** drop your `.tex` into `templates/latex/` (or point Export at any path: *"export with template `<path>`"*). Automatic replacement requires the four header tokens, all three named regions, and compatible built-in macros; otherwise Export emits copy-ready snippets for manual paste. See [`templates/latex/TEMPLATE_GUIDE.md`](templates/latex/TEMPLATE_GUIDE.md) for the contract.
+**Bring your own template:** point Export at any path: *"export with template `<path>`"*. Automatic replacement requires the four header tokens, all three named regions, and compatible built-in macros; otherwise Export emits copy-ready snippets for manual paste. See [`TEMPLATE_GUIDE.md`](plugins/programmer-resume-skill/templates/latex/TEMPLATE_GUIDE.md) for the contract.
 
-Alternatives: Markdown ([`templates/markdown/resume.md`](templates/markdown/resume.md)), HTML ([`templates/html/resume.html`](templates/html/resume.html)), JSON Resume ([`templates/json/resume.schema.json`](templates/json/resume.schema.json)).
+Alternatives: Markdown ([`resume.md`](plugins/programmer-resume-skill/templates/markdown/resume.md)), HTML ([`resume.html`](plugins/programmer-resume-skill/templates/html/resume.html)), JSON Resume ([`resume.schema.json`](plugins/programmer-resume-skill/templates/json/resume.schema.json)). XeLaTeX/MacTeX remains an external optional dependency; it is not bundled with the plugin.
 
 ## Privacy
 
@@ -65,34 +77,37 @@ These skills run **fully locally inside your agent session**. They do not upload
 
 ## Authenticity red line
 
-Every capability enforces the same rule: **package wording, never fabricate.** If a metric cannot be verified from evidence (the user's resume, repo, or git history), the skill emits a `<<CONFIRM: …>>` marker and flags it. The mock-interview skill will feed back claims that won't survive scrutiny as polish suggestions. The examples in [`examples/`](examples/) are explicitly fictional — do not copy them into a real résumé.
+Every capability enforces the same rule: **package wording, never fabricate.** If a metric cannot be verified from evidence (the user's resume, repo, or git history), the skill emits a `<<CONFIRM: …>>` marker and flags it. The mock-interview skill will feed back claims that won't survive scrutiny as polish suggestions. The packaged [`examples/`](plugins/programmer-resume-skill/examples/) are explicitly fictional — do not copy them into a real résumé.
 
 ## Examples & specs
 
-- **Worked examples** (one fictional new-grad backend résumé through every capability): [`examples/`](examples/) — see [`examples/README.md`](examples/README.md).
+- **Worked examples** (one fictional new-grad backend résumé through every capability): [`examples/`](plugins/programmer-resume-skill/examples/) — see [`examples/README.md`](plugins/programmer-resume-skill/examples/README.md).
 - **Design spec** (capabilities, architecture, decision rationale): [`docs/superpowers/specs/2026-07-02-resume-skill-suite-design.md`](docs/superpowers/specs/2026-07-02-resume-skill-suite-design.md).
 - **Plan & progress** (15-task breakdown): [`docs/superpowers/plans/2026-07-03-resume-skill-suite.md`](docs/superpowers/plans/2026-07-03-resume-skill-suite.md).
-- **CN↔NA research base:** [`docs/research/`](docs/research/).
+- **CN↔NA research base:** [`docs/research/`](plugins/programmer-resume-skill/docs/research/).
 
 ## Repository layout
 
 ```
-.claude-plugin/plugin.json        Claude Code manifest
-.codex-plugin/plugin.json         OpenAI Codex manifest (same skills/)
-agents/openai.yaml                Codex agent interface
-skills/
+.agents/plugins/marketplace.json  Codex Git Marketplace manifest
+.claude-plugin/marketplace.json   Claude Code Git Marketplace manifest
+plugins/programmer-resume-skill/  the single packaged plugin source
+  .claude-plugin/plugin.json      Claude Code plugin manifest
+  .codex-plugin/plugin.json       OpenAI Codex plugin manifest
+  agents/openai.yaml              Codex agent interface
+  skills/
   resume-optimizer/               main skill: Polish / Review / JD-Match / Localize / Export
     SKILL.md + references/        resume-rules, jd-matching, cn-na-market, export-formats, guides 1–6
   resume-from-code/               code → project section
     SKILL.md + references/        code-mining
   resume-mock-interview/          resume → interview question bank
     SKILL.md + references/        interview-bank
-templates/
-  latex/                          resume-cn.tex, resume-na.tex, TEMPLATE_GUIDE.md
-  markdown/  html/  json/         alt export formats + JSON schema
-examples/                         7 fictional files showing every capability
-scripts/validate.py               structural validator (skills/refs/manifests/template vars)
-tests/                            unittest suite for the validator
+  templates/
+    latex/                        resume-cn.tex, resume-na.tex, TEMPLATE_GUIDE.md
+    markdown/  html/  json/       alt export formats + JSON schema
+  examples/                       7 fictional files showing every capability
+  scripts/validate.py             structural validator (skills/refs/manifests/template vars)
+  tests/                          pytest suite and XeLaTeX smoke fixtures
 ```
 
 ## License

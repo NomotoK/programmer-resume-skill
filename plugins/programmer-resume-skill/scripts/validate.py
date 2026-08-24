@@ -4,10 +4,16 @@
 Exit code 0 (prints OK summary) when valid; 1 with an error list otherwise.
 Run: python3 scripts/validate.py   |   tests call validate(root).
 """
-import json, re, sys
+import argparse
+import json
+import re
+import sys
 from pathlib import Path
 
 DEFAULT_ROOT = Path(__file__).resolve().parent.parent
+PLUGIN_NAME = "programmer-resume-skill"
+MARKETPLACE_NAME = "programmer-resume"
+PLUGIN_RELATIVE_PATH = Path("plugins") / PLUGIN_NAME
 
 FRONTMATTER_RE = re.compile(r"^---\n(.*?)\n---\n", re.DOTALL)
 REF_LINK_RE = re.compile(r"references/[\w./\-]+\.md")
@@ -168,8 +174,59 @@ def validate(root: Path = DEFAULT_ROOT):
     return errors
 
 
+def _marketplace_entry(payload, path, expected_name, errors):
+    plugins = payload.get("plugins")
+    if not isinstance(plugins, list):
+        errors.append(f"{path}: missing plugins array")
+        return None
+    entries = [entry for entry in plugins if isinstance(entry, dict) and entry.get("name") == expected_name]
+    if len(entries) != 1:
+        errors.append(f"{path}: requires exactly one {expected_name!r} entry")
+        return None
+    return entries[0]
+
+
+def validate_repository(repository_root: Path):
+    """Validate the marketplace manifests that publish this plugin package."""
+    repository_root = Path(repository_root)
+    errors = validate(repository_root / PLUGIN_RELATIVE_PATH)
+
+    codex_path = repository_root / ".agents/plugins/marketplace.json"
+    codex, load_error = _load_json(codex_path) if codex_path.is_file() else (None, f"missing {codex_path}")
+    if load_error:
+        errors.append(load_error)
+    else:
+        if codex.get("name") != MARKETPLACE_NAME:
+            errors.append(f"{codex_path}: marketplace name must be {MARKETPLACE_NAME!r}")
+        if codex.get("interface", {}).get("displayName") != "Programmer Resume":
+            errors.append(f"{codex_path}: interface.displayName must be 'Programmer Resume'")
+        entry = _marketplace_entry(codex, codex_path, PLUGIN_NAME, errors)
+        if entry is not None:
+            if entry.get("source") != {"source": "local", "path": f"./{PLUGIN_RELATIVE_PATH}"}:
+                errors.append(f"{codex_path}: plugin source must target ./{PLUGIN_RELATIVE_PATH}")
+            if entry.get("policy") != {"installation": "AVAILABLE", "authentication": "ON_INSTALL"}:
+                errors.append(f"{codex_path}: plugin policy must be AVAILABLE/ON_INSTALL")
+            if entry.get("category") != "Developer Tools":
+                errors.append(f"{codex_path}: plugin category must be 'Developer Tools'")
+
+    claude_path = repository_root / ".claude-plugin/marketplace.json"
+    claude, load_error = _load_json(claude_path) if claude_path.is_file() else (None, f"missing {claude_path}")
+    if load_error:
+        errors.append(load_error)
+    else:
+        if claude.get("name") != MARKETPLACE_NAME:
+            errors.append(f"{claude_path}: marketplace name must be {MARKETPLACE_NAME!r}")
+        entry = _marketplace_entry(claude, claude_path, PLUGIN_NAME, errors)
+        if entry is not None and entry.get("source") != f"./{PLUGIN_RELATIVE_PATH}":
+            errors.append(f"{claude_path}: plugin source must target ./{PLUGIN_RELATIVE_PATH}")
+    return errors
+
+
 def main():
-    errors = validate()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--repository-root", type=Path)
+    args = parser.parse_args()
+    errors = validate_repository(args.repository_root) if args.repository_root else validate()
     if errors:
         print("VALIDATION FAILED:")
         for e in errors:

@@ -1,6 +1,6 @@
 ---
 name: resume-mock-interview
-description: Generate interview questions from a resume's project experience. Use when a user wants mock-interview prep: given a resume (especially its project sections), produce dozens of layered questions per project, each with reference talking points and likely follow-ups, covering implementation, tech-choice rationale, hard problems, optimization depth, and fundamentals.
+description: "Generate interview questions from a resume's project experience. Use when a user wants mock-interview prep: given a resume (especially its project sections), produce dozens of layered questions per project, each with reference talking points and likely follow-ups, covering implementation, tech-choice rationale, hard problems, optimization depth, and fundamentals."
 ---
 
 # Resume Mock Interview

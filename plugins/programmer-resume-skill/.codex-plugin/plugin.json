@@ -1,0 +1,29 @@
+{
+  "name": "programmer-resume-skill",
+  "description": "Cross-platform skill suite for software-engineer job-search résumés: polish, code-to-resume, review, mock interview, CN<->NA localization, and JD matching, with LaTeX-first export.",
+  "version": "0.2.0",
+  "author": {
+    "name": "NomotoK",
+    "url": "https://github.com/NomotoK"
+  },
+  "homepage": "https://github.com/NomotoK/programmer-resume-skill",
+  "repository": "https://github.com/NomotoK/programmer-resume-skill",
+  "license": "MIT",
+  "keywords": ["resume", "cv", "career", "skills", "interview", "software-engineer"],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Programmer Resume",
+    "shortDescription": "Review, tailor, and export software-engineer resumes.",
+    "longDescription": "Improve software-engineer resumes with evidence-backed reviews, JD matching, CN/NA localization, code-to-resume drafting, mock interviews, and template-based exports.",
+    "developerName": "NomotoK",
+    "category": "Developer Tools",
+    "capabilities": ["Interactive", "Write"],
+    "websiteURL": "https://github.com/NomotoK/programmer-resume-skill",
+    "defaultPrompt": [
+      "Review my software-engineer resume and prioritize the highest-impact fixes.",
+      "Tailor my resume to this job description without inventing claims.",
+      "Export my resume with the built-in XeLaTeX template."
+    ],
+    "brandColor": "#2563EB"
+  }
+}

@@ -19,11 +19,23 @@
 
 ## 安装
 
-**Claude Code：** `/plugin` 添加本仓库为 marketplace/plugin，或将 `skills/*` 复制到你的 skills 目录。
+**OpenAI Codex：** 通过 marketplace 安装完整插件包（含 skills、模板、脚本、样例和调研资料）：
 
-**OpenAI Codex：** 作为插件安装（`.codex-plugin/plugin.json`），或将 `skills/*` 复制到 `~/.codex/skills/`。
+```bash
+codex plugin marketplace add NomotoK/programmer-resume-skill --ref main
+codex plugin add programmer-resume-skill@programmer-resume
+```
 
-两份 manifest（`.claude-plugin/plugin.json`、`.codex-plugin/plugin.json`）指向同一棵 `skills/` 树 —— 一份源码，两个运行时。没有任何 skill 硬编码宿主专属的工具名（已用 `grep -rniE "Read tool|WebFetch|web_fetch" skills` 验证）。
+更新时运行 `codex plugin marketplace upgrade programmer-resume`，再重新安装 `programmer-resume-skill@programmer-resume`，并新开一个 Codex 会话。
+
+**Claude Code：** 通过同一份打包源码安装：
+
+```bash
+claude plugin marketplace add NomotoK/programmer-resume-skill
+claude plugin install programmer-resume-skill@programmer-resume
+```
+
+**仅安装 skills：** 可将 `plugins/programmer-resume-skill/skills/*` 复制到 `~/.codex/skills/`。这样保留 Skill 及其内部 references，但不包含内置模板、校验脚本、样例和调研资料。两个 marketplace 均指向同一份插件源码。
 
 ## 使用方式
 
@@ -44,20 +56,20 @@
 - **CN→NA：** 硬删除照片 / 年龄 / 性别 / 身份证 / 籍贯 / 政治面貌 / 详细地址 / 期望薪资；把微信换成 LinkedIn；去掉技能分级（了解/熟悉/熟练掌握）；把"负责"类描述改写为 `Led / Built / Designed` + X-Y-Z（"通过做 Z 达成 Y，从而实现 X"）；强制一页（应届）；删除 CET；教育经历放工作之后。
 - **NA→CN：** 恢复技术栈行 + STAR；加上求职意向 + 毕业时间；恢复 了解/熟悉 分级；可选加排名 / CET；按学校声誉（985/211）重排教育经历。
 
-完整规则：[`skills/resume-optimizer/references/cn-na-market.md`](skills/resume-optimizer/references/cn-na-market.md)，原始调研见 [`docs/research/`](docs/research/)。
+完整规则：[`cn-na-market.md`](plugins/programmer-resume-skill/skills/resume-optimizer/references/cn-na-market.md)，原始调研见打包的 [`docs/research/`](plugins/programmer-resume-skill/docs/research/)。
 
 ## 模板与导出
 
-导出以 **LaTeX 为首选**。仓库在 [`templates/latex/`](templates/latex/) 下内置两个模板：
+导出以 **LaTeX 为首选**。插件在 [`templates/latex/`](plugins/programmer-resume-skill/templates/latex/) 下内置两个模板：
 
 - `resume-cn.tex` —— 中文；用 **xelatex** 编译（需要 `ctex`）。
 - `resume-na.tex` —— 英文 / 北美导向；使用 **xelatex** 编译。
 
 skill 会替换 4 个头部 `<<TOKEN>>`（姓名、邮箱、电话、GitHub 用户名），并将 schema 数据生成到 `EDUCATION`、`EXPERIENCE`、`SKILLS` 三个具名区块中（`\resumeEduSubheading{...}{...}{...}`、`\resumeProjectHeading{...}{...}{...}`、`\resumeItem{...}`）。这样可保留真实的学位、专业、课程以及北美版的条件内容，不会继承虚构默认值。skill **不负责编译** —— 它把 `.tex` 交给你运行 `xelatex`。
 
-**使用你自己的模板：** 把 `.tex` 放进 `templates/latex/`（或给 Export 指定任意路径：*"export with template `<path>`"*）。自动替换要求模板同时具备 4 个头部 token、3 个具名区块与兼容的内置宏；否则 Export 只生成可复制粘贴的片段。完整契约见 [`templates/latex/TEMPLATE_GUIDE.md`](templates/latex/TEMPLATE_GUIDE.md)。
+**使用你自己的模板：** 给 Export 指定任意路径：*"export with template `<path>`"*。自动替换要求模板同时具备 4 个头部 token、3 个具名区块与兼容的内置宏；否则 Export 只生成可复制粘贴的片段。完整契约见 [`TEMPLATE_GUIDE.md`](plugins/programmer-resume-skill/templates/latex/TEMPLATE_GUIDE.md)。
 
-备选格式：Markdown（[`templates/markdown/resume.md`](templates/markdown/resume.md)）、HTML（[`templates/html/resume.html`](templates/html/resume.html)）、JSON Resume（[`templates/json/resume.schema.json`](templates/json/resume.schema.json)）。
+备选格式：Markdown（[`resume.md`](plugins/programmer-resume-skill/templates/markdown/resume.md)）、HTML（[`resume.html`](plugins/programmer-resume-skill/templates/html/resume.html)）、JSON Resume（[`resume.schema.json`](plugins/programmer-resume-skill/templates/json/resume.schema.json)）。XeLaTeX/MacTeX 是外部可选依赖，不随插件分发。
 
 ## 隐私
 
@@ -65,34 +77,37 @@ skill 会替换 4 个头部 `<<TOKEN>>`（姓名、邮箱、电话、GitHub 用�
 
 ## 真实性红线
 
-所有能力共享同一条规则：**包装措辞，绝不编造。** 如果某个指标无法从证据（用户的简历、仓库或 git 历史）核实，skill 会发出 `<<CONFIRM: …>>` 标记并予以提示。模拟面试 skill 会把经不起推敲的说法反馈为润色建议。[ `examples/`](examples/) 中的示例均为虚构 —— 请勿复制进真实简历。
+所有能力共享同一条规则：**包装措辞，绝不编造。** 如果某个指标无法从证据（用户的简历、仓库或 git 历史）核实，skill 会发出 `<<CONFIRM: …>>` 标记并予以提示。模拟面试 skill 会把经不起推敲的说法反馈为润色建议。打包的 [`examples/`](plugins/programmer-resume-skill/examples/) 中的示例均为虚构 —— 请勿复制进真实简历。
 
 ## 示例与规格文档
 
-- **完整示例**（用同一位虚构应届后端简历跑通每项能力）：[`examples/`](examples/) —— 入口 [`examples/README.md`](examples/README.md)。
+- **完整示例**（用同一位虚构应届后端简历跑通每项能力）：[`examples/`](plugins/programmer-resume-skill/examples/) —— 入口 [`examples/README.md`](plugins/programmer-resume-skill/examples/README.md)。
 - **设计规格**（能力定义、架构、决策依据）：[`docs/superpowers/specs/2026-07-02-resume-skill-suite-design.md`](docs/superpowers/specs/2026-07-02-resume-skill-suite-design.md)。
 - **计划与进度**（15 任务拆解）：[`docs/superpowers/plans/2026-07-03-resume-skill-suite.md`](docs/superpowers/plans/2026-07-03-resume-skill-suite.md)。
-- **CN↔NA 调研底稿：** [`docs/research/`](docs/research/)。
+- **CN↔NA 调研底稿：** [`docs/research/`](plugins/programmer-resume-skill/docs/research/)。
 
 ## 仓库结构
 
 ```
-.claude-plugin/plugin.json        Claude Code manifest
-.codex-plugin/plugin.json         OpenAI Codex manifest（同一棵 skills/）
-agents/openai.yaml                Codex agent 接口
-skills/
+.agents/plugins/marketplace.json  Codex Git Marketplace 清单
+.claude-plugin/marketplace.json   Claude Code Git Marketplace 清单
+plugins/programmer-resume-skill/  唯一的打包插件源码
+  .claude-plugin/plugin.json      Claude Code manifest
+  .codex-plugin/plugin.json       OpenAI Codex manifest
+  agents/openai.yaml              Codex agent 接口
+  skills/
   resume-optimizer/               主 skill：润色 / 点评 / JD 匹配 / 中英适配 / 导出
     SKILL.md + references/        resume-rules、jd-matching、cn-na-market、export-formats、guides 1–6
   resume-from-code/               代码 → 项目经历
     SKILL.md + references/        code-mining
   resume-mock-interview/          简历 → 面试题库
     SKILL.md + references/        interview-bank
-templates/
-  latex/                          resume-cn.tex、resume-na.tex、TEMPLATE_GUIDE.md
-  markdown/  html/  json/         备选导出格式 + JSON schema
-examples/                         7 个虚构文件，演示每项能力
-scripts/validate.py               结构校验器（skills / refs / manifests / 模板变量）
-tests/                            校验器的 unittest 测试套件
+  templates/
+    latex/                        resume-cn.tex、resume-na.tex、TEMPLATE_GUIDE.md
+    markdown/  html/  json/       备选导出格式 + JSON schema
+  examples/                       7 个虚构文件，演示每项能力
+  scripts/validate.py             结构校验器（skills / refs / manifests / 模板变量）
+  tests/                          pytest 套件和 XeLaTeX smoke fixture
 ```
 
 ## License
