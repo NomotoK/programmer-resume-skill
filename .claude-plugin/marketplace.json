@@ -1,0 +1,21 @@
+{
+  "name": "programmer-resume",
+  "description": "Skills for reviewing, tailoring, and exporting software-engineer resumes.",
+  "owner": {
+    "name": "NomotoK",
+    "url": "https://github.com/NomotoK"
+  },
+  "plugins": [
+    {
+      "name": "programmer-resume-skill",
+      "source": "./plugins/programmer-resume-skill",
+      "description": "Review, tailor, localize, and export software-engineer resumes.",
+      "version": "0.2.0",
+      "author": {
+        "name": "NomotoK"
+      },
+      "category": "productivity",
+      "tags": ["resume", "career", "interview", "software-engineer"]
+    }
+  ]
+}

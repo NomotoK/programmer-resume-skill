@@ -1,0 +1,20 @@
+{
+  "name": "programmer-resume",
+  "interface": {
+    "displayName": "Programmer Resume"
+  },
+  "plugins": [
+    {
+      "name": "programmer-resume-skill",
+      "source": {
+        "source": "local",
+        "path": "./plugins/programmer-resume-skill"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Developer Tools"
+    }
+  ]
+}
