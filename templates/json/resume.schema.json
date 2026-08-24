@@ -1,0 +1,79 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nomotok.github.io/programmer-resume-skill/resume.schema.v2.json",
+  "title": "Tech Resume (Export Contract v2)",
+  "type": "object",
+  "required": ["basics"],
+  "properties": {
+    "basics": {
+      "type": "object",
+      "description": "Populates <<NAME>>, <<EMAIL>>, <<PHONE>>, and <<GITHUB_USERNAME>>.",
+      "properties": {
+        "name": {"type": "string"},
+        "email": {"type": "string"},
+        "phone": {"type": "string"},
+        "githubUsername": {"type": "string"},
+        "targetMarket": {"type": "string", "enum": ["CN", "NA"]},
+        "location": {"type": "string"},
+        "wechat": {"type": "string"},
+        "linkedin": {"type": "string"},
+        "website": {"type": "string"},
+        "workAuthorization": {"type": "string"},
+        "summary": {"type": "string"}
+      }
+    },
+    "education": {
+      "type": "array",
+      "description": "Every entry renders into the EDUCATION region; ordering is preserved.",
+      "items": {"type": "object", "properties": {
+        "level": {"type": "string", "enum": ["master", "bachelor", "phd", "other"]},
+        "institution": {"type": "string"},
+        "score": {"type": "string", "description": "GPA, e.g. 3.8/4.0"},
+        "date": {"type": "string", "description": "e.g. 2024.06"},
+        "area": {"type": "string"},
+        "studyType": {"type": "string"},
+        "rank": {"type": "string", "description": "CN only, e.g. 专业排名前10%"},
+        "courses": {"type": "array", "items": {"type": "string"}}
+      }}
+    },
+    "skills": {
+      "type": "array",
+      "description": "Rendered as template skill items. CN: tiered (了解/熟悉/熟练掌握). NA: categorized, no tiers.",
+      "items": {"type": "object", "properties": {
+        "category": {"type": "string"},
+        "items": {"type": "array", "items": {"type": "string"}},
+        "tier": {"type": "string", "description": "CN only: 了解|熟悉|熟练掌握|精通(校招禁用)"}
+      }}
+    },
+    "work": {
+      "type": "array",
+      "description": "Rendered via \\resumeProjectHeading + \\resumeItem. NA: X-Y-Z action verbs. CN: STAR + 技术栈 line.",
+      "items": {"type": "object", "properties": {
+        "company": {"type": "string"},
+        "position": {"type": "string"},
+        "startDate": {"type": "string"},
+        "endDate": {"type": "string"},
+        "techStack": {"type": "array", "items": {"type": "string"}},
+        "highlights": {"type": "array", "items": {"type": "string"}}
+      }}
+    },
+    "projects": {
+      "type": "array",
+      "description": "Rendered via \\resumeProjectHeading + \\resumeItem.",
+      "items": {"type": "object", "properties": {
+        "name": {"type": "string"},
+        "description": {"type": "string"},
+        "techStack": {"type": "array", "items": {"type": "string"}},
+        "url": {"type": "string"},
+        "date": {"type": "string"},
+        "highlights": {"type": "array", "items": {"type": "string"}}
+      }}
+    },
+    "awards": {
+      "type": "array",
+      "items": {"type": "object", "properties": {
+        "title": {"type": "string"}, "date": {"type": "string"}, "awarder": {"type": "string"}
+      }}
+    }
+  }
+}

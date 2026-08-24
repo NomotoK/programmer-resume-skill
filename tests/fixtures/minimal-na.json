@@ -1,0 +1,27 @@
+{
+  "basics": {
+    "name": "Avery Li",
+    "email": "avery.li@example.com",
+    "phone": "(555) 010-1000",
+    "githubUsername": "avery_li",
+    "targetMarket": "NA"
+  },
+  "education": [
+    {
+      "level": "bachelor",
+      "institution": "Example University",
+      "studyType": "B.A.",
+      "area": "Linguistics",
+      "date": "2021--2025"
+    }
+  ],
+  "projects": [
+    {
+      "name": "Terminology_Search",
+      "techStack": ["Python", "FastAPI"],
+      "date": "2024",
+      "highlights": ["Built C# & Bash tooling that cut cost by 5% (value $10) for {pilot} at C:\\tmp~^."]
+    }
+  ],
+  "skills": [{"category": "Languages", "items": ["Python", "TypeScript"]}]
+}

@@ -1,0 +1,53 @@
+% Programmer Resume — CN template. Compile with xelatex only.
+\documentclass[a4paper,10pt]{article}
+\usepackage[margin=0.55in]{geometry}
+\usepackage[fontset=fandol]{ctex}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{array}
+\usepackage{fontawesome5}
+\hypersetup{colorlinks=true,urlcolor=black}
+\pagestyle{empty}
+\titleformat{\section}{\large\bfseries\raggedright}{}{0em}{}[\titlerule]
+\titlespacing{\section}{0pt}{8pt}{4pt}
+\setlist[itemize]{topsep=2pt,itemsep=2pt,parsep=0pt,partopsep=0pt}
+
+\newcommand{\resumeEduSubheading}[3]{%
+  \item\begin{tabular*}{\linewidth}[t]{@{}l@{\extracolsep{\fill}}r@{}}
+  \textbf{#1} & \small #2 \\ \textit{\small #3} &
+  \end{tabular*}\vspace{1pt}}
+\newcommand{\resumeEduLine}[1]{\noindent\parbox[t]{\linewidth}{\small #1}\par}
+\newcommand{\resumeProjectHeading}[3]{%
+  \item\begin{tabular*}{\linewidth}{@{}l@{\extracolsep{\fill}}r@{}}
+  \colorbox{gray!20}{\textbf{#1}} \quad \textit{\small #2} & \small #3
+  \end{tabular*}\vspace{0pt}}
+\newcommand{\resumeItem}[1]{\item \small{#1}}
+
+\begin{document}
+\begin{center}
+  {\LARGE \bfseries <<NAME>>} \\[6pt]
+  \small \faEnvelope\ \href{mailto:<<EMAIL>>}{<<EMAIL>>} \quad
+  \faPhone\ <<PHONE>> \quad
+  \faGithub\ \href{https://github.com/<<GITHUB_USERNAME>>}{github.com/<<GITHUB_USERNAME>>}
+\end{center}
+
+\section{教育背景}
+\begin{itemize}[label={},leftmargin=0pt]
+% RESUME-SKILL:BEGIN EDUCATION
+% RESUME-SKILL:END EDUCATION
+\end{itemize}
+
+\section{项目与实习经历}
+\begin{itemize}[label={},leftmargin=0pt]
+% RESUME-SKILL:BEGIN EXPERIENCE
+% RESUME-SKILL:END EXPERIENCE
+\end{itemize}
+
+\section{专业技能}
+\begin{itemize}[label={\(\bullet\)},leftmargin=0.15in]
+% RESUME-SKILL:BEGIN SKILLS
+% RESUME-SKILL:END SKILLS
+\end{itemize}
+\end{document}

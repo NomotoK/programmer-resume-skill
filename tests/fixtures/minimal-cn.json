@@ -1,0 +1,29 @@
+{
+  "basics": {
+    "name": "李安",
+    "email": "li.an@example.com",
+    "phone": "+86 138-0000-0000",
+    "githubUsername": "li_an",
+    "targetMarket": "CN"
+  },
+  "education": [
+    {
+      "level": "bachelor",
+      "institution": "北京外国语大学",
+      "studyType": "文学学士",
+      "area": "英语",
+      "score": "3.8/4.0",
+      "date": "2021.09--2025.06",
+      "courses": ["翻译理论", "语言学"]
+    }
+  ],
+  "projects": [
+    {
+      "name": "术语检索服务",
+      "techStack": ["Python", "FastAPI"],
+      "date": "2024.06",
+      "highlights": ["基于 FastAPI 实现术语检索接口。"]
+    }
+  ],
+  "skills": [{"tier": "熟悉", "items": ["Python", "FastAPI"]}]
+}
