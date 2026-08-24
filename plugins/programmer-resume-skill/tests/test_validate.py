@@ -51,7 +51,7 @@ class ValidateTests(unittest.TestCase):
         self._tree(d, files)
         return validate(d)
 
-    def _run_repository(self, files):
+    def _run_repository(self, files, opencode_config=None):
         d = Path(tempfile.mkdtemp())
         plugin_root = d / "plugins" / "programmer-resume-skill"
         self._tree(plugin_root, files)
@@ -80,6 +80,10 @@ class ValidateTests(unittest.TestCase):
                         ],
                     }
                 ),
+                "opencode.json": json.dumps(opencode_config or {
+                    "$schema": "https://opencode.ai/config.json",
+                    "skills": {"paths": ["./plugins/programmer-resume-skill/skills"]},
+                }),
             },
         )
         return validate_repository(d)
@@ -96,6 +100,17 @@ class ValidateTests(unittest.TestCase):
             {"name": "programmer-resume-skill", "description": "d"}
         )
         self.assertEqual(self._run_repository(files), [])
+
+    def test_repository_requires_the_project_local_opencode_source(self):
+        files = self._base()
+        files[".codex-plugin/plugin.json"] = json.dumps(
+            {"name": "programmer-resume-skill", "description": "d"}
+        )
+        files[".claude-plugin/plugin.json"] = json.dumps(
+            {"name": "programmer-resume-skill", "description": "d"}
+        )
+        errors = self._run_repository(files, {"skills": {"paths": ["./skills"]}})
+        self.assertTrue(any("opencode.json" in error and "skills" in error for error in errors))
 
     def test_missing_frontmatter_fails(self):
         files = self._base(); files["skills/demo/SKILL.md"] = "# Demo\nno frontmatter\n"

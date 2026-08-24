@@ -35,6 +35,14 @@ claude plugin marketplace add NomotoK/programmer-resume-skill
 claude plugin install programmer-resume-skill@programmer-resume
 ```
 
+**OpenCode（项目级）：** 克隆仓库后在根目录启动 OpenCode。[`opencode.json`](opencode.json) 直接加载打包的 skills，不复制文件，因此模板、脚本、样例和调研资料仍保持原始可访问路径。
+
+```bash
+git clone https://github.com/NomotoK/programmer-resume-skill.git
+cd programmer-resume-skill
+opencode
+```
+
 **仅安装 skills：** 可将 `plugins/programmer-resume-skill/skills/*` 复制到 `~/.codex/skills/`。这样保留 Skill 及其内部 references，但不包含内置模板、校验脚本、样例和调研资料。两个 marketplace 均指向同一份插件源码。
 
 ## 使用方式
@@ -91,6 +99,7 @@ skill 会替换 4 个头部 `<<TOKEN>>`（姓名、邮箱、电话、GitHub 用�
 ```
 .agents/plugins/marketplace.json  Codex Git Marketplace 清单
 .claude-plugin/marketplace.json   Claude Code Git Marketplace 清单
+opencode.json                     OpenCode 项目级 Skill 来源
 plugins/programmer-resume-skill/  唯一的打包插件源码
   .claude-plugin/plugin.json      Claude Code manifest
   .codex-plugin/plugin.json       OpenAI Codex manifest

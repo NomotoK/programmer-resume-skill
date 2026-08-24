@@ -35,6 +35,14 @@ claude plugin marketplace add NomotoK/programmer-resume-skill
 claude plugin install programmer-resume-skill@programmer-resume
 ```
 
+**OpenCode (project-local):** clone this repository and start OpenCode from its root. [`opencode.json`](opencode.json) loads the packaged skills without copying them, so templates, scripts, examples, and research remain available at their original paths.
+
+```bash
+git clone https://github.com/NomotoK/programmer-resume-skill.git
+cd programmer-resume-skill
+opencode
+```
+
 **Skills-only fallback:** copy `plugins/programmer-resume-skill/skills/*` into `~/.codex/skills/`. This preserves each skill and its internal references, but it does **not** include the built-in templates, validation scripts, examples, or research material. Both marketplaces point to the same packaged source tree.
 
 ## Usage
@@ -91,6 +99,7 @@ Every capability enforces the same rule: **package wording, never fabricate.** I
 ```
 .agents/plugins/marketplace.json  Codex Git Marketplace manifest
 .claude-plugin/marketplace.json   Claude Code Git Marketplace manifest
+opencode.json                     OpenCode project-local skill source
 plugins/programmer-resume-skill/  the single packaged plugin source
   .claude-plugin/plugin.json      Claude Code plugin manifest
   .codex-plugin/plugin.json       OpenAI Codex plugin manifest

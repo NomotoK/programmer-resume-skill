@@ -14,6 +14,7 @@ DEFAULT_ROOT = Path(__file__).resolve().parent.parent
 PLUGIN_NAME = "programmer-resume-skill"
 MARKETPLACE_NAME = "programmer-resume"
 PLUGIN_RELATIVE_PATH = Path("plugins") / PLUGIN_NAME
+OPENCODE_SKILLS_SOURCE = f"./{PLUGIN_RELATIVE_PATH}/skills"
 
 FRONTMATTER_RE = re.compile(r"^---\n(.*?)\n---\n", re.DOTALL)
 REF_LINK_RE = re.compile(r"references/[\w./\-]+\.md")
@@ -187,7 +188,7 @@ def _marketplace_entry(payload, path, expected_name, errors):
 
 
 def validate_repository(repository_root: Path):
-    """Validate the marketplace manifests that publish this plugin package."""
+    """Validate the marketplace manifests and project-local OpenCode source."""
     repository_root = Path(repository_root)
     errors = validate(repository_root / PLUGIN_RELATIVE_PATH)
 
@@ -219,6 +220,16 @@ def validate_repository(repository_root: Path):
         entry = _marketplace_entry(claude, claude_path, PLUGIN_NAME, errors)
         if entry is not None and entry.get("source") != f"./{PLUGIN_RELATIVE_PATH}":
             errors.append(f"{claude_path}: plugin source must target ./{PLUGIN_RELATIVE_PATH}")
+
+    opencode_path = repository_root / "opencode.json"
+    opencode, load_error = _load_json(opencode_path) if opencode_path.is_file() else (None, f"missing {opencode_path}")
+    if load_error:
+        errors.append(load_error)
+    else:
+        if opencode.get("$schema") != "https://opencode.ai/config.json":
+            errors.append(f"{opencode_path}: must use the OpenCode config schema")
+        if opencode.get("skills") != {"paths": [OPENCODE_SKILLS_SOURCE]}:
+            errors.append(f"{opencode_path}: skills.paths must contain only {OPENCODE_SKILLS_SOURCE!r}")
     return errors
 
 

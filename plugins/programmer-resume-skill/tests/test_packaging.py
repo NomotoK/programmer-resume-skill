@@ -26,6 +26,11 @@ class PackagingTests(unittest.TestCase):
             ],
         )
 
+    def test_opencode_uses_the_packaged_skills_as_a_project_source(self):
+        config = json.loads((REPOSITORY_ROOT / "opencode.json").read_text(encoding="utf-8"))
+        self.assertEqual(config["$schema"], "https://opencode.ai/config.json")
+        self.assertEqual(config["skills"], {"paths": ["./plugins/programmer-resume-skill/skills"]})
+
     def test_codex_manifest_exposes_the_packaged_skills(self):
         manifest = json.loads(
             (PLUGIN_ROOT / ".codex-plugin/plugin.json").read_text(encoding="utf-8")
