@@ -1,6 +1,6 @@
 % Programmer Resume — CN template. Compile with xelatex only.
 \documentclass[a4paper,10pt]{article}
-\usepackage[margin=0.55in]{geometry}
+\usepackage[left=1.0cm,right=1.0cm,top=0.5cm,bottom=0.5cm]{geometry}
 \usepackage[fontset=fandol]{ctex}
 \usepackage{enumitem}
 \usepackage{titlesec}
@@ -33,20 +33,35 @@
   \faGithub\ \href{https://github.com/<<GITHUB_USERNAME>>}{github.com/<<GITHUB_USERNAME>>}
 \end{center}
 
-\section{教育背景}
+\section{\textcolor{blue!60!black}{教育背景}}
 \begin{itemize}[label={},leftmargin=0pt]
 % RESUME-SKILL:BEGIN EDUCATION
+\resumeEduSubheading
+{<<SCHOOL>>}
+{\quad <<START_DATE>> - <<END_DATE>>}
+{<<MAJOR>><<DEGREE>> \quad GPA: <<GPA>>}
+\resumeEduLine{\textbf{课程:} <<COURSES>>}
 % RESUME-SKILL:END EDUCATION
 \end{itemize}
 
-\section{项目与实习经历}
+\section{\textcolor{blue!60!black}{项目与实习经历}}
 \begin{itemize}[label={},leftmargin=0pt]
+
 % RESUME-SKILL:BEGIN EXPERIENCE
+\resumeProjectHeading
+{<<COMPANY>> - <<DEPARTMENT>> - <<POSITION>>}
+{<<TECH STACK 1 / TECH STACK 2 / ...>>}
+{<<START_DATE>> - <<END_DATE>>}
+\begin{itemize}[label={$\bullet$},leftmargin=0.15in,topsep=0pt,itemsep=1pt]
+  \resumeItem{<<PROJECT_DESCRIPTION>>}
+
+\end{itemize}
 % RESUME-SKILL:END EXPERIENCE
+
 \end{itemize}
 
-\section{专业技能}
-\begin{itemize}[label={\(\bullet\)},leftmargin=0.15in]
+\section{\textcolor{blue!60!black}{专业技能}}
+\begin{itemize}[label={$\bullet$},leftmargin=0.15in]
 % RESUME-SKILL:BEGIN SKILLS
 % RESUME-SKILL:END SKILLS
 \end{itemize}

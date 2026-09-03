@@ -1,6 +1,6 @@
 % Programmer Resume — NA template. Compile with xelatex only (uses fontspec).
 \documentclass[a4paper,10pt]{article}
-\usepackage[margin=0.55in]{geometry}
+\usepackage[left=1.0cm,right=1.0cm,top=0.5cm,bottom=0.5cm]{geometry}
 \usepackage{fontspec}
 \usepackage{enumitem}
 \usepackage{titlesec}
@@ -33,19 +33,32 @@
   \faGithub\ \href{https://github.com/<<GITHUB_USERNAME>>}{github.com/<<GITHUB_USERNAME>>}
 \end{center}
 
-\section{Education}
+\section{\textcolor{blue!60!black}{Education}}
 \begin{itemize}[label={},leftmargin=0pt]
 % RESUME-SKILL:BEGIN EDUCATION
+\resumeEduSubheading
+{<<SCHOOL>>}
+{\quad <<START_DATE>> - <<END_DATE>>}
+{<<MAJOR>><<DEGREE>> \quad GPA: <<GPA>>}
 % RESUME-SKILL:END EDUCATION
 \end{itemize}
 
-\section{Projects \& Internship Experience}
+\section{\textcolor{blue!60!black}{Internship \& Projects Experience}}
 \begin{itemize}[label={},leftmargin=0pt]
+
 % RESUME-SKILL:BEGIN EXPERIENCE
+\resumeProjectHeading
+{<<COMPANY>> - <<DEPARTMENT>> - <<POSITION>>}
+{<<TECH STACK 1 / TECH STACK 2 / ...>>}
+{<<START_DATE>> - <<END_DATE>>}
+\begin{itemize}[label={$\bullet$},leftmargin=0.15in,topsep=0pt,itemsep=1pt]
+  \resumeItem{<<PROJECT_DESCRIPTION>>}
+
+\end{itemize}
 % RESUME-SKILL:END EXPERIENCE
 \end{itemize}
 
-\section{Technical Skills}
+\section{\textcolor{blue!60!black}{Technical Skills}}
 \begin{itemize}[label={\(\bullet\)},leftmargin=0.15in]
 % RESUME-SKILL:BEGIN SKILLS
 % RESUME-SKILL:END SKILLS
