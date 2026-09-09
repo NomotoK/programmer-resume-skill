@@ -16,7 +16,7 @@ Substitute and LaTeX-escape only these five tokens:
 | `<<SCHOOL>>` | First non-empty `education[].institution` |
 | `<<EMAIL>>` | `basics.email` |
 | `<<PHONE>>` | `basics.phone` |
-| `<<GITHUB_USERNAME>>` | `basics.githubUsername` |
+| `<<GITHUB>>` | `basics.githubUsername` |
 
 If a value is unavailable, leave a visible `MISSING_<TOKEN>` marker and list it in the export summary. In LaTeX output, escape that marker before insertion. No other `<<TOKEN>>` is valid in a built-in template.
 
@@ -52,7 +52,7 @@ Markdown and HTML use the same three named regions. HTML must retain semantic `<
 
 ## Custom templates
 
-Automatic replacement is supported only when the custom template has all four marker pairs and compatible `\resumeEduSubheading`, `\resumeEduLine`, `\resumeProjectHeading`, and `\resumeItem` macros. Otherwise emit a copy-ready region snippet and state that the user must paste it manually.
+Automatic replacement is supported only when the custom template has all four marker pairs and compatible `\resumeEduSubheading`, `\resumeEduLine`, `\resumeProjectHeading`, `\resumeItem`, and `\resumeSkill` macros. Otherwise emit a copy-ready region snippet and state that the user must paste it manually.
 
 ## Export summary
 

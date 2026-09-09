@@ -2,13 +2,22 @@
 
 The built-in `resume-cn.tex` and `resume-na.tex` templates compile with **XeLaTeX only**. Both contain five auto-filled header tokens:
 
+From this directory, either of these commands selects the correct engine:
+
+```sh
+latexmk resume-cn.tex
+latexmk resume-na.tex
+```
+
+The bundled `latexmkrc` sets XeLaTeX as the default, and each template also contains a `% !TeX program = xelatex` editor directive. From another working directory, use `latexmk -xelatex path/to/resume-cn.tex` (or `resume-na.tex`).
+
 | Token | Schema field |
 |---|---|
 | `<<NAME>>` | `basics.name` |
 | `<<SCHOOL>>` | First non-empty `education[].institution` |
 | `<<EMAIL>>` | `basics.email` |
 | `<<PHONE>>` | `basics.phone` |
-| `<<GITHUB_USERNAME>>` | `basics.githubUsername` |
+| `<<GITHUB>>` | `basics.githubUsername` |
 
 All other resume content is generated from the schema into these paired comment regions, exactly once per template:
 
@@ -27,4 +36,4 @@ Education is generated from every `education[]` entry, so a bachelor-only, maste
 
 ## Custom templates
 
-Automatic replacement requires all four region pairs and the built-in macro interface: `\resumeEduSubheading`, `\resumeEduLine`, `\resumeProjectHeading`, and `\resumeItem`. A custom template without them receives copy-ready snippets only; do not promise automatic replacement.
+Automatic replacement requires all four region pairs and the built-in macro interface: `\resumeEduSubheading`, `\resumeEduLine`, `\resumeProjectHeading`, `\resumeItem`, and `\resumeSkill`. A custom template without them receives copy-ready snippets only; do not promise automatic replacement.

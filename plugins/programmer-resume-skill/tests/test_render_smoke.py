@@ -44,7 +44,7 @@ class RenderSmokeTests(unittest.TestCase):
         rendered = render_fixture(
             ROOT / "templates/latex/resume-na.tex", data, "NA"
         )
-        self.assertIn("Languages:", rendered)
+        self.assertIn("\\resumeSkill{Languages}{Python, TypeScript}", rendered)
         self.assertIn("\\section{Internship Experience}", rendered)
         self.assertIn("\\section{Personal Projects}", rendered)
         self.assertLess(rendered.index("Northwind Labs"), rendered.index("Terminology\_Search"))
@@ -57,7 +57,7 @@ class RenderSmokeTests(unittest.TestCase):
         data = self._fixture("minimal-na.json")
         del data["basics"]["githubUsername"]
         rendered = render_fixture(ROOT / "templates/latex/resume-na.tex", data, "NA")
-        self.assertIn("MISSING\\_GITHUB\\_USERNAME", rendered)
+        self.assertIn("MISSING\\_GITHUB", rendered)
         with tempfile.TemporaryDirectory() as directory:
             tex_path = Path(directory) / "resume-na.tex"
             tex_path.write_text(rendered, encoding="utf-8")

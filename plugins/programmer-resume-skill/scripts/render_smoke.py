@@ -11,7 +11,7 @@ HEADER_FIELDS = {
     "NAME": "name",
     "EMAIL": "email",
     "PHONE": "phone",
-    "GITHUB_USERNAME": "githubUsername",
+    "GITHUB": "githubUsername",
 }
 ESCAPES = {
     "\\": r"\textbackslash{}",
@@ -106,7 +106,7 @@ def _skills_block(data, market):
             continue
         separator = " / " if market == "CN" else ", "
         lines.append(
-            "\\item \\small \\textbf{%s:} %s"
+            "\\resumeSkill{%s}{%s}"
             % (escape_latex(label), separator.join(escape_latex(item) for item in items))
         )
     return "\n".join(lines)

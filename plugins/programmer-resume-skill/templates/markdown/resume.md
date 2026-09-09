@@ -1,6 +1,6 @@
 # <<NAME>>
 
-<<EMAIL>> | <<PHONE>> | github.com/<<GITHUB_USERNAME>>
+<<EMAIL>> | <<PHONE>> | github.com/<<GITHUB>>
 
 ## Education
 
