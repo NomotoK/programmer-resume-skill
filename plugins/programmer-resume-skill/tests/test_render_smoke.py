@@ -25,7 +25,9 @@ class RenderSmokeTests(unittest.TestCase):
             ROOT / "templates/latex/resume-cn.tex", self._fixture("minimal-cn.json"), "CN"
         )
         self.assertIn("北京外国语大学", rendered)
-        self.assertIn("\\textbf{北京外国语大学}", rendered)
+        self.assertNotIn("<<SCHOOL>>", rendered)
+        self.assertIn("\\vspace{0pt}{\\LARGE\\bfseries 李安}", rendered)
+        self.assertIn("\\begin{tabular}[t]{@{}c@{\\hspace{0.45em}}r@{}}", rendered)
         self.assertIn("文学学士 in 英语", rendered)
         self.assertIn("翻译理论", rendered)
         self.assertNotIn("<<SCHOOL_BACHELOR>>", rendered)

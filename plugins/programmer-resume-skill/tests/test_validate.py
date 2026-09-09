@@ -3,7 +3,7 @@ from pathlib import Path
 from scripts.validate import validate, validate_repository
 
 VALID_SKILL = "---\nname: demo\ndescription: Use when X to do Y.\n---\n# Demo\nSee [rules](references/rules.md).\n"
-VALID_TEMPLATE = """<<NAME>> <<SCHOOL>> <<EMAIL>> <<PHONE>> <<GITHUB>>
+VALID_TEMPLATE = """<<NAME>> <<EMAIL>> <<PHONE>> <<GITHUB>>
 % RESUME-SKILL:BEGIN EDUCATION
 % RESUME-SKILL:END EDUCATION
 % RESUME-SKILL:BEGIN WORK
@@ -40,7 +40,7 @@ class ValidateTests(unittest.TestCase):
             ".codex-plugin/plugin.json": json.dumps({"name": "demo", "description": "d"}),
             "skills/demo/SKILL.md": VALID_SKILL,
             "skills/demo/references/rules.md": "# rules\n",
-            "templates/latex/TEMPLATE_GUIDE.md": "Tokens: <<NAME>> <<SCHOOL>> <<EMAIL>> <<PHONE>> <<GITHUB>>\n",
+            "templates/latex/TEMPLATE_GUIDE.md": "Tokens: <<NAME>> <<EMAIL>> <<PHONE>> <<GITHUB>>\n",
             "templates/latex/resume-cn.tex": VALID_TEMPLATE,
             "templates/latex/resume-na.tex": VALID_TEMPLATE,
             "templates/html/resume.html": VALID_HTML,

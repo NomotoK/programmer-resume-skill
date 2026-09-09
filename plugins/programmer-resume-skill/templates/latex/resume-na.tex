@@ -30,14 +30,15 @@
 \begin{document}
 \noindent
 \begin{minipage}[t]{0.38\textwidth}
-  \vspace{0pt}{\Large\bfseries <<NAME>>}
+  \vspace{0pt}{\LARGE\bfseries <<NAME>>}
 \end{minipage}\hfill
 \begin{minipage}[t]{0.60\textwidth}
   \vspace{0pt}\raggedleft\small
-  \textbf{<<SCHOOL>>} \\
-  \faEnvelope\ \href{mailto:<<EMAIL>>}{<<EMAIL>>} \\
-  \faPhone\ <<PHONE>> \\
-  \faGithub\ \href{https://github.com/<<GITHUB>>}{github.com/<<GITHUB>>}
+  \begin{tabular}[t]{@{}c@{\hspace{0.45em}}r@{}}
+    \faEnvelope & \href{mailto:<<EMAIL>>}{<<EMAIL>>} \\
+    \faPhone & <<PHONE>> \\
+    \faGithub & \href{https://github.com/<<GITHUB>>}{github.com/<<GITHUB>>}
+  \end{tabular}
 \end{minipage}\vspace{4pt}
 
 \section{Education}

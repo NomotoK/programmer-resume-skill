@@ -7,7 +7,7 @@
   "properties": {
     "basics": {
       "type": "object",
-      "description": "Populates <<NAME>>, <<EMAIL>>, <<PHONE>>, and <<GITHUB>>; <<SCHOOL>> comes from the first education entry.",
+      "description": "Populates <<NAME>>, <<EMAIL>>, <<PHONE>>, and <<GITHUB>>.",
       "properties": {
         "name": {"type": "string"},
         "email": {"type": "string"},

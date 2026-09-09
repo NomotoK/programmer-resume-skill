@@ -8,12 +8,11 @@ Export consumes one finalized object matching [`templates/json/resume.schema.jso
 
 ### Header tokens
 
-Substitute and LaTeX-escape only these five tokens:
+Substitute and LaTeX-escape only these four tokens:
 
 | Token | Schema field |
 |---|---|
 | `<<NAME>>` | `basics.name` |
-| `<<SCHOOL>>` | First non-empty `education[].institution` |
 | `<<EMAIL>>` | `basics.email` |
 | `<<PHONE>>` | `basics.phone` |
 | `<<GITHUB>>` | `basics.githubUsername` |
