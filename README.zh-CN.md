@@ -73,9 +73,9 @@ opencode
 - `resume-cn.tex` —— 中文；用 **xelatex** 编译（需要 `ctex`）。
 - `resume-na.tex` —— 英文 / 北美导向；使用 **xelatex** 编译。
 
-skill 会替换 5 个头部 `<<TOKEN>>`（姓名、第一所学校、邮箱、电话、GitHub 用户名），并将 schema 数据生成到 `EDUCATION`、`WORK`、`PROJECTS`、`SKILLS` 四个具名区块中（`\resumeEduSubheading{...}{...}{...}`、`\resumeProjectHeading{...}{...}{...}`、`\resumeItem{...}`）。实习与个人项目会分开呈现，同时保留真实的学位、专业、课程以及北美版的条件内容，不会继承虚构默认值。skill **不负责编译** —— 它把 `.tex` 交给你运行 `xelatex`。
+skill 会替换 4 个头部 `<<TOKEN>>`（姓名、邮箱、电话、GitHub 用户名），并将 schema 数据生成到 `EDUCATION`、`WORK`、`PROJECTS`、`SKILLS` 四个具名区块中（`\resumeEduSubheading{...}{...}{...}`、`\resumeProjectHeading{...}{...}{...}`、`\resumeItem{...}`）。实习与个人项目会分开呈现，同时保留真实的学位、专业、课程以及北美版的条件内容，不会继承虚构默认值。skill **不负责编译** —— 它把 `.tex` 交给你运行 `xelatex`。
 
-**使用你自己的模板：** 给 Export 指定任意路径：*"export with template `<path>`"*。自动替换要求模板同时具备 5 个头部 token、4 个具名区块与兼容的内置宏；否则 Export 只生成可复制粘贴的片段。完整契约见 [`TEMPLATE_GUIDE.md`](plugins/programmer-resume-skill/templates/latex/TEMPLATE_GUIDE.md)。
+**使用你自己的模板：** 给 Export 指定任意路径：*"export with template `<path>`"*。自动替换要求模板同时具备 4 个头部 token、4 个具名区块与兼容的内置宏；否则 Export 只生成可复制粘贴的片段。完整契约见 [`TEMPLATE_GUIDE.md`](plugins/programmer-resume-skill/templates/latex/TEMPLATE_GUIDE.md)。
 
 备选格式：Markdown（[`resume.md`](plugins/programmer-resume-skill/templates/markdown/resume.md)）、HTML（[`resume.html`](plugins/programmer-resume-skill/templates/html/resume.html)）、JSON Resume（[`resume.schema.json`](plugins/programmer-resume-skill/templates/json/resume.schema.json)）。XeLaTeX/MacTeX 是外部可选依赖，不随插件分发。
 

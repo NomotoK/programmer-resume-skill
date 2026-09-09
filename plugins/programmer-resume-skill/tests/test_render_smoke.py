@@ -25,7 +25,9 @@ class RenderSmokeTests(unittest.TestCase):
             ROOT / "templates/latex/resume-cn.tex", self._fixture("minimal-cn.json"), "CN"
         )
         self.assertIn("北京外国语大学", rendered)
-        self.assertIn("\\textbf{北京外国语大学}", rendered)
+        self.assertNotIn("<<SCHOOL>>", rendered)
+        self.assertIn("\\vspace{0pt}{\\LARGE\\bfseries 李安}", rendered)
+        self.assertIn("\\begin{tabular}[t]{@{}c@{\\hspace{0.45em}}r@{}}", rendered)
         self.assertIn("文学学士 in 英语", rendered)
         self.assertIn("翻译理论", rendered)
         self.assertNotIn("<<SCHOOL_BACHELOR>>", rendered)
@@ -44,7 +46,7 @@ class RenderSmokeTests(unittest.TestCase):
         rendered = render_fixture(
             ROOT / "templates/latex/resume-na.tex", data, "NA"
         )
-        self.assertIn("Languages:", rendered)
+        self.assertIn("\\resumeSkill{Languages}{Python, TypeScript}", rendered)
         self.assertIn("\\section{Internship Experience}", rendered)
         self.assertIn("\\section{Personal Projects}", rendered)
         self.assertLess(rendered.index("Northwind Labs"), rendered.index("Terminology\_Search"))
@@ -57,7 +59,7 @@ class RenderSmokeTests(unittest.TestCase):
         data = self._fixture("minimal-na.json")
         del data["basics"]["githubUsername"]
         rendered = render_fixture(ROOT / "templates/latex/resume-na.tex", data, "NA")
-        self.assertIn("MISSING\\_GITHUB\\_USERNAME", rendered)
+        self.assertIn("MISSING\\_GITHUB", rendered)
         with tempfile.TemporaryDirectory() as directory:
             tex_path = Path(directory) / "resume-na.tex"
             tex_path.write_text(rendered, encoding="utf-8")

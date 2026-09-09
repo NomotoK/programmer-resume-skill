@@ -1,0 +1,2 @@
+# Both built-in resume templates require XeLaTeX (ctex/fontspec).
+$pdf_mode = 5;

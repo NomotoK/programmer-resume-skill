@@ -11,7 +11,7 @@ HEADER_FIELDS = {
     "NAME": "name",
     "EMAIL": "email",
     "PHONE": "phone",
-    "GITHUB_USERNAME": "githubUsername",
+    "GITHUB": "githubUsername",
 }
 ESCAPES = {
     "\\": r"\textbackslash{}",
@@ -106,7 +106,7 @@ def _skills_block(data, market):
             continue
         separator = " / " if market == "CN" else ", "
         lines.append(
-            "\\item \\small \\textbf{%s:} %s"
+            "\\resumeSkill{%s}{%s}"
             % (escape_latex(label), separator.join(escape_latex(item) for item in items))
         )
     return "\n".join(lines)
@@ -119,9 +119,6 @@ def render_fixture(template, data, market):
         value = basics.get(field)
         replacement = value if value is not None else f"MISSING_{token}"
         text = text.replace(f"<<{token}>>", escape_latex(replacement))
-    education = data.get("education", [])
-    school = education[0].get("institution") if education else None
-    text = text.replace("<<SCHOOL>>", escape_latex(school if school else "MISSING_SCHOOL"))
     return _replace_region(
         _replace_region(
             _replace_region(
