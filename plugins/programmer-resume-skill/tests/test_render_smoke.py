@@ -25,16 +25,29 @@ class RenderSmokeTests(unittest.TestCase):
             ROOT / "templates/latex/resume-cn.tex", self._fixture("minimal-cn.json"), "CN"
         )
         self.assertIn("北京外国语大学", rendered)
+        self.assertIn("\\textbf{北京外国语大学}", rendered)
         self.assertIn("文学学士 in 英语", rendered)
         self.assertIn("翻译理论", rendered)
         self.assertNotIn("<<SCHOOL_BACHELOR>>", rendered)
         self.assertNotIn("计算机科学 工学硕士", rendered)
 
     def test_na_fixture_omits_language_score_and_uses_category(self):
+        data = self._fixture("minimal-na.json")
+        data["work"] = [{
+            "company": "Northwind Labs",
+            "position": "Software Engineering Intern",
+            "startDate": "2024-05",
+            "endDate": "2024-08",
+            "techStack": ["Python"],
+            "highlights": ["Automated a release check."],
+        }]
         rendered = render_fixture(
-            ROOT / "templates/latex/resume-na.tex", self._fixture("minimal-na.json"), "NA"
+            ROOT / "templates/latex/resume-na.tex", data, "NA"
         )
         self.assertIn("Languages:", rendered)
+        self.assertIn("\\section{Internship Experience}", rendered)
+        self.assertIn("\\section{Personal Projects}", rendered)
+        self.assertLess(rendered.index("Northwind Labs"), rendered.index("Terminology\_Search"))
         self.assertNotIn("CET", rendered)
         self.assertNotIn("LANGUAGE_SCORE", rendered)
         self.assertNotIn("Proficient", rendered)

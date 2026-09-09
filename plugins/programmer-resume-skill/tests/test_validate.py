@@ -3,11 +3,13 @@ from pathlib import Path
 from scripts.validate import validate, validate_repository
 
 VALID_SKILL = "---\nname: demo\ndescription: Use when X to do Y.\n---\n# Demo\nSee [rules](references/rules.md).\n"
-VALID_TEMPLATE = """<<NAME>> <<EMAIL>> <<PHONE>> <<GITHUB_USERNAME>>
+VALID_TEMPLATE = """<<NAME>> <<SCHOOL>> <<EMAIL>> <<PHONE>> <<GITHUB_USERNAME>>
 % RESUME-SKILL:BEGIN EDUCATION
 % RESUME-SKILL:END EDUCATION
-% RESUME-SKILL:BEGIN EXPERIENCE
-% RESUME-SKILL:END EXPERIENCE
+% RESUME-SKILL:BEGIN WORK
+% RESUME-SKILL:END WORK
+% RESUME-SKILL:BEGIN PROJECTS
+% RESUME-SKILL:END PROJECTS
 % RESUME-SKILL:BEGIN SKILLS
 % RESUME-SKILL:END SKILLS
 """
@@ -38,7 +40,7 @@ class ValidateTests(unittest.TestCase):
             ".codex-plugin/plugin.json": json.dumps({"name": "demo", "description": "d"}),
             "skills/demo/SKILL.md": VALID_SKILL,
             "skills/demo/references/rules.md": "# rules\n",
-            "templates/latex/TEMPLATE_GUIDE.md": "Tokens: <<NAME>> <<EMAIL>> <<PHONE>> <<GITHUB_USERNAME>>\n",
+            "templates/latex/TEMPLATE_GUIDE.md": "Tokens: <<NAME>> <<SCHOOL>> <<EMAIL>> <<PHONE>> <<GITHUB_USERNAME>>\n",
             "templates/latex/resume-cn.tex": VALID_TEMPLATE,
             "templates/latex/resume-na.tex": VALID_TEMPLATE,
             "templates/html/resume.html": VALID_HTML,
@@ -167,8 +169,8 @@ class ValidateTests(unittest.TestCase):
     def test_overlapping_export_regions_fail(self):
         files = self._base()
         files["templates/latex/resume-cn.tex"] = VALID_TEMPLATE.replace(
-            "% RESUME-SKILL:END EDUCATION\n% RESUME-SKILL:BEGIN EXPERIENCE",
-            "% RESUME-SKILL:BEGIN EXPERIENCE\n% RESUME-SKILL:END EDUCATION",
+            "% RESUME-SKILL:END EDUCATION\n% RESUME-SKILL:BEGIN WORK",
+            "% RESUME-SKILL:BEGIN WORK\n% RESUME-SKILL:END EDUCATION",
         )
         self.assertTrue(any("overlap" in e for e in self._run(files)))
 

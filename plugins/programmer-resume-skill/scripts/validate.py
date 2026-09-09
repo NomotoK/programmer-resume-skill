@@ -20,8 +20,9 @@ FRONTMATTER_RE = re.compile(r"^---\n(.*?)\n---\n", re.DOTALL)
 REF_LINK_RE = re.compile(r"references/[\w./\-]+\.md")
 PLACEHOLDER_RE = re.compile(r"<<([A-Z_]+)>>")
 KV_RE = re.compile(r"^(\w+):\s*(.*)$")
-HEADER_TOKENS = {"NAME", "EMAIL", "PHONE", "GITHUB_USERNAME"}
-REGION_NAMES = ("EDUCATION", "EXPERIENCE", "SKILLS")
+HEADER_TOKENS = {"NAME", "SCHOOL", "EMAIL", "PHONE", "GITHUB_USERNAME"}
+LATEX_REGION_NAMES = ("EDUCATION", "WORK", "PROJECTS", "SKILLS")
+GENERIC_REGION_NAMES = ("EDUCATION", "EXPERIENCE", "SKILLS")
 REQUIRED_EXPORT_ASSETS = (
     "templates/latex/TEMPLATE_GUIDE.md",
     "templates/latex/resume-cn.tex",
@@ -31,10 +32,10 @@ REQUIRED_EXPORT_ASSETS = (
     "templates/json/resume.schema.json",
 )
 TEMPLATE_MARKER_FORMATS = (
-    ("templates/latex/resume-cn.tex", "% RESUME-SKILL:BEGIN ", "% RESUME-SKILL:END ", ""),
-    ("templates/latex/resume-na.tex", "% RESUME-SKILL:BEGIN ", "% RESUME-SKILL:END ", ""),
-    ("templates/html/resume.html", "<!-- RESUME-SKILL:BEGIN ", "<!-- RESUME-SKILL:END ", " -->"),
-    ("templates/markdown/resume.md", "<!-- RESUME-SKILL:BEGIN ", "<!-- RESUME-SKILL:END ", " -->"),
+    ("templates/latex/resume-cn.tex", "% RESUME-SKILL:BEGIN ", "% RESUME-SKILL:END ", "", LATEX_REGION_NAMES),
+    ("templates/latex/resume-na.tex", "% RESUME-SKILL:BEGIN ", "% RESUME-SKILL:END ", "", LATEX_REGION_NAMES),
+    ("templates/html/resume.html", "<!-- RESUME-SKILL:BEGIN ", "<!-- RESUME-SKILL:END ", " -->", GENERIC_REGION_NAMES),
+    ("templates/markdown/resume.md", "<!-- RESUME-SKILL:BEGIN ", "<!-- RESUME-SKILL:END ", " -->", GENERIC_REGION_NAMES),
 )
 
 
@@ -57,7 +58,7 @@ def _load_json(path):
         return None, f"{path}: invalid JSON ({e})"
 
 
-def _validate_template_contract(path, begin_prefix, end_prefix, suffix, declared, err):
+def _validate_template_contract(path, begin_prefix, end_prefix, suffix, region_names, declared, err):
     text = path.read_text(encoding="utf-8")
     regions = []
     used = set(PLACEHOLDER_RE.findall(text))
@@ -65,7 +66,7 @@ def _validate_template_contract(path, begin_prefix, end_prefix, suffix, declared
         err(f"{path.name}: placeholder <<{token}>> not documented in TEMPLATE_GUIDE.md")
     for token in sorted(used - HEADER_TOKENS):
         err(f"{path.name}: unsupported template token <<{token}>>")
-    for region in REGION_NAMES:
+    for region in region_names:
         begin_marker = f"{begin_prefix}{region}{suffix}"
         end_marker = f"{end_prefix}{region}{suffix}"
         begin_count = text.count(begin_marker)
@@ -158,11 +159,11 @@ def validate(root: Path = DEFAULT_ROOT):
     guide = root / "templates/latex/TEMPLATE_GUIDE.md"
     if guide.is_file():
         declared = set(PLACEHOLDER_RE.findall(guide.read_text(encoding="utf-8")))
-        for rel, begin_prefix, end_prefix, suffix in TEMPLATE_MARKER_FORMATS:
+        for rel, begin_prefix, end_prefix, suffix, region_names in TEMPLATE_MARKER_FORMATS:
             template = root / rel
             if not template.is_file():
                 continue
-            _validate_template_contract(template, begin_prefix, end_prefix, suffix, declared, err)
+            _validate_template_contract(template, begin_prefix, end_prefix, suffix, region_names, declared, err)
 
     html = root / "templates/html/resume.html"
     if html.is_file():

@@ -1,13 +1,13 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://nomotok.github.io/programmer-resume-skill/resume.schema.v2.json",
-  "title": "Tech Resume (Export Contract v2)",
+  "$id": "https://nomotok.github.io/programmer-resume-skill/resume.schema.v3.json",
+  "title": "Tech Resume (Export Contract v3)",
   "type": "object",
   "required": ["basics"],
   "properties": {
     "basics": {
       "type": "object",
-      "description": "Populates <<NAME>>, <<EMAIL>>, <<PHONE>>, and <<GITHUB_USERNAME>>.",
+      "description": "Populates <<NAME>>, <<EMAIL>>, <<PHONE>>, and <<GITHUB_USERNAME>>; <<SCHOOL>> comes from the first education entry.",
       "properties": {
         "name": {"type": "string"},
         "email": {"type": "string"},
@@ -47,7 +47,7 @@
     },
     "work": {
       "type": "array",
-      "description": "Rendered via \\resumeProjectHeading + \\resumeItem. NA: X-Y-Z action verbs. CN: STAR + 技术栈 line.",
+      "description": "Rendered into the WORK region via \\resumeProjectHeading + \\resumeItem. NA: X-Y-Z action verbs. CN: STAR + 技术栈 line.",
       "items": {"type": "object", "properties": {
         "company": {"type": "string"},
         "position": {"type": "string"},
@@ -59,7 +59,7 @@
     },
     "projects": {
       "type": "array",
-      "description": "Rendered via \\resumeProjectHeading + \\resumeItem.",
+      "description": "Rendered into the PROJECTS region via \\resumeProjectHeading + \\resumeItem.",
       "items": {"type": "object", "properties": {
         "name": {"type": "string"},
         "description": {"type": "string"},

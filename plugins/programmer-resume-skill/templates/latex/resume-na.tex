@@ -20,18 +20,23 @@
   \end{tabular*}\vspace{1pt}}
 \newcommand{\resumeEduLine}[1]{\noindent\parbox[t]{\linewidth}{\small #1}\par}
 \newcommand{\resumeProjectHeading}[3]{%
-  \item\begin{tabular*}{\linewidth}{@{}l@{\extracolsep{\fill}}r@{}}
+  \noindent\begin{tabular*}{\linewidth}{@{}l@{\extracolsep{\fill}}r@{}}
   \colorbox{gray!20}{\textbf{#1}} \quad \textit{\small #2} & \small #3
   \end{tabular*}\vspace{0pt}}
 \newcommand{\resumeItem}[1]{\item \small{#1}}
 
 \begin{document}
-\begin{center}
-  {\LARGE \bfseries <<NAME>>} \\[6pt]
-  \small \faEnvelope\ \href{mailto:<<EMAIL>>}{<<EMAIL>>} \quad
-  \faPhone\ <<PHONE>> \quad
+\noindent
+\begin{minipage}[t]{0.38\textwidth}
+  \vspace{0pt}{\Large\bfseries <<NAME>>}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.60\textwidth}
+  \vspace{0pt}\raggedleft\small
+  \textbf{<<SCHOOL>>} \\
+  \faEnvelope\ \href{mailto:<<EMAIL>>}{<<EMAIL>>} \\
+  \faPhone\ <<PHONE>> \\
   \faGithub\ \href{https://github.com/<<GITHUB_USERNAME>>}{github.com/<<GITHUB_USERNAME>>}
-\end{center}
+\end{minipage}\vspace{4pt}
 
 \section{Education}
 \begin{itemize}[label={},leftmargin=0pt]
@@ -39,11 +44,13 @@
 % RESUME-SKILL:END EDUCATION
 \end{itemize}
 
-\section{Projects \& Internship Experience}
-\begin{itemize}[label={},leftmargin=0pt]
-% RESUME-SKILL:BEGIN EXPERIENCE
-% RESUME-SKILL:END EXPERIENCE
-\end{itemize}
+\section{Internship Experience}
+% RESUME-SKILL:BEGIN WORK
+% RESUME-SKILL:END WORK
+
+\section{Personal Projects}
+% RESUME-SKILL:BEGIN PROJECTS
+% RESUME-SKILL:END PROJECTS
 
 \section{Technical Skills}
 \begin{itemize}[label={\(\bullet\)},leftmargin=0.15in]

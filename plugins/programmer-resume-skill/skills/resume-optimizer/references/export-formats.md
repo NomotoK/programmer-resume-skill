@@ -1,4 +1,4 @@
-# Export Formats — Contract v2
+# Export Formats — Contract v3
 
 Export consumes one finalized object matching [`templates/json/resume.schema.json`](../../../templates/json/resume.schema.json). It never invents values; unresolved information remains a `<<CONFIRM: …>>` content marker and is called out before submission.
 
@@ -8,11 +8,12 @@ Export consumes one finalized object matching [`templates/json/resume.schema.jso
 
 ### Header tokens
 
-Substitute and LaTeX-escape only these four tokens:
+Substitute and LaTeX-escape only these five tokens:
 
 | Token | Schema field |
 |---|---|
 | `<<NAME>>` | `basics.name` |
+| `<<SCHOOL>>` | First non-empty `education[].institution` |
 | `<<EMAIL>>` | `basics.email` |
 | `<<PHONE>>` | `basics.phone` |
 | `<<GITHUB_USERNAME>>` | `basics.githubUsername` |
@@ -26,14 +27,17 @@ Replace the content *between*, not including, each marker pair exactly once:
 ```tex
 % RESUME-SKILL:BEGIN EDUCATION
 % RESUME-SKILL:END EDUCATION
-% RESUME-SKILL:BEGIN EXPERIENCE
-% RESUME-SKILL:END EXPERIENCE
+% RESUME-SKILL:BEGIN WORK
+% RESUME-SKILL:END WORK
+% RESUME-SKILL:BEGIN PROJECTS
+% RESUME-SKILL:END PROJECTS
 % RESUME-SKILL:BEGIN SKILLS
 % RESUME-SKILL:END SKILLS
 ```
 
 - `EDUCATION`: render every `education[]` item with `institution`, `studyType`, `area`, `score`, `date`, `rank`, and `courses` when present. Omit missing subfields; never substitute a fictional degree, major, or course list.
-- `EXPERIENCE`: render non-empty `work[]` and `projects[]` entries using `\resumeProjectHeading{...}{...}{...}`, followed by a nested itemize and `\resumeItem{...}` bullets. Omit an entry with no highlights.
+- `WORK`: render non-empty `work[]` entries using `\resumeProjectHeading{...}{...}{...}`, followed by a nested itemize and `\resumeItem{...}` bullets. Omit an entry with no highlights.
+- `PROJECTS`: render non-empty `projects[]` entries using the same macros. Omit an entry with no highlights.
 - `SKILLS`: CN groups items by `tier`; NA groups by `category`. NA has no CET, language-score, or proficiency-tier line.
 
 Use the templates' macros and preserve their preamble. If a region is empty, leave the region body empty instead of fabricating content.
@@ -48,7 +52,7 @@ Markdown and HTML use the same three named regions. HTML must retain semantic `<
 
 ## Custom templates
 
-Automatic replacement is supported only when the custom template has all three marker pairs and compatible `\resumeEduSubheading`, `\resumeEduLine`, `\resumeProjectHeading`, and `\resumeItem` macros. Otherwise emit a copy-ready region snippet and state that the user must paste it manually.
+Automatic replacement is supported only when the custom template has all four marker pairs and compatible `\resumeEduSubheading`, `\resumeEduLine`, `\resumeProjectHeading`, and `\resumeItem` macros. Otherwise emit a copy-ready region snippet and state that the user must paste it manually.
 
 ## Export summary
 

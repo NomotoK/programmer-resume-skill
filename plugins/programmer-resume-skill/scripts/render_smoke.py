@@ -62,15 +62,7 @@ def _education_block(data):
     return "\n".join(lines)
 
 
-def _experience_block(data):
-    entries = []
-    for project in data.get("projects", []):
-        entries.append((project.get("name", ""), project.get("techStack", []), project.get("date", ""), project.get("highlights", [])))
-    for work in data.get("work", []):
-        name = " — ".join(part for part in (work.get("company", ""), work.get("position", "")) if part)
-        date = " -- ".join(part for part in (work.get("startDate", ""), work.get("endDate", "")) if part)
-        entries.append((name, work.get("techStack", []), date, work.get("highlights", [])))
-
+def _entry_block(entries):
     blocks = []
     for name, stack, date, highlights in entries:
         if not highlights:
@@ -87,6 +79,22 @@ def _experience_block(data):
             )
         )
     return "\n".join(blocks)
+
+
+def _work_block(data):
+    entries = []
+    for work in data.get("work", []):
+        name = " — ".join(part for part in (work.get("company", ""), work.get("position", "")) if part)
+        date = " -- ".join(part for part in (work.get("startDate", ""), work.get("endDate", "")) if part)
+        entries.append((name, work.get("techStack", []), date, work.get("highlights", [])))
+    return _entry_block(entries)
+
+
+def _projects_block(data):
+    entries = []
+    for project in data.get("projects", []):
+        entries.append((project.get("name", ""), project.get("techStack", []), project.get("date", ""), project.get("highlights", [])))
+    return _entry_block(entries)
 
 
 def _skills_block(data, market):
@@ -111,11 +119,18 @@ def render_fixture(template, data, market):
         value = basics.get(field)
         replacement = value if value is not None else f"MISSING_{token}"
         text = text.replace(f"<<{token}>>", escape_latex(replacement))
+    education = data.get("education", [])
+    school = education[0].get("institution") if education else None
+    text = text.replace("<<SCHOOL>>", escape_latex(school if school else "MISSING_SCHOOL"))
     return _replace_region(
         _replace_region(
-            _replace_region(text, "EDUCATION", _education_block(data)),
-            "EXPERIENCE",
-            _experience_block(data),
+            _replace_region(
+                _replace_region(text, "EDUCATION", _education_block(data)),
+                "WORK",
+                _work_block(data),
+            ),
+            "PROJECTS",
+            _projects_block(data),
         ),
         "SKILLS",
         _skills_block(data, market),
